@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -21,7 +24,7 @@ public class Robot extends TimedRobot {
 
   private static Drivetrain m_drive = new Drivetrain();
   private static Shooter m_shooter = new Shooter(0, 0);
-
+  private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
   private static XboxController m_controller = new XboxController(0);
 
   private static final String kDefaultAuto = "Default";
@@ -101,11 +104,15 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when test mode is enabled. */
   @Override
-  public void testInit() {}
+  public void testInit() {
+    ahrs.reset();
+  }
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    ahrs.getAngle();
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
