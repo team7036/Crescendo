@@ -2,12 +2,19 @@ package frc.robot.subsystems.drivetrain;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkRelativeEncoder;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.Encoder;
 
 public class SwerveModule {
 
@@ -17,8 +24,9 @@ public class SwerveModule {
     private static final double kModuleMaxAngularAcceleration = 2 * Math.PI; 
 
     // Create Variables for Motor and Encoder
-    private final PWMSparkMax m_driveMotor;
-    private final PWMSparkMax m_turnMotor;
+    private final CANSparkMax m_driveMotor;
+    private final RelativeEncoder m_driveEncoder;
+    private final CANSparkMax m_turnMotor;
     private final CANcoder m_turnEncoder;
 
     // Create PID Controllers and set Gains
@@ -32,10 +40,23 @@ public class SwerveModule {
 
 
     public SwerveModule(int turnMotorID, int driveMotorID, int turnEncoderID){
-        m_turnMotor = new PWMSparkMax(turnMotorID);
-        m_driveMotor = new PWMSparkMax(driveMotorID);
+        m_turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
+        m_driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
         m_turnPIDContoller.enableContinuousInput(-Math.PI, Math.PI);
         m_turnEncoder = new CANcoder(turnEncoderID);
+        m_driveEncoder = m_driveMotor.getEncoder(SparkRelativeEncoder.Type.kQuadrature, 4096);
+    }
+
+    public SwerveModuleState getState(){
+        return new SwerveModuleState();
+    }
+
+    public SwerveModulePosition getPosition(){
+        return new SwerveModulePosition();
+    }
+
+    public void setDesiredState( SwerveModuleState desiredState ){
+        
     }
 
 }

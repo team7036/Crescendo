@@ -1,6 +1,12 @@
 package frc.robot.subsystems.drivetrain;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.SerialPort;
 
 public class Drivetrain {
 
@@ -20,7 +26,35 @@ public class Drivetrain {
     private final SwerveModule m_backLeft = new SwerveModule(21, 20, 0);
     private final SwerveModule m_backRight = new SwerveModule(19, 18, 0);
 
+    // Setup NavX Gyro
+    private final AHRS m_gyro = new AHRS(SerialPort.Port.kMXP);
+
+    // Establish Variables for Kinematics and Odemetry
+    private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
+        m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+
+    private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
+        m_kinematics, 
+        m_gyro.getRotation2d(),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_backLeft.getPosition(),
+            m_backRight.getPosition()
+        }
+    );
+
     public Drivetrain() {
-    
+        m_gyro.reset();
+    }
+
+    public void drive(
+        double xSpeed, double ySpeed, double rot, boolean fieldRelative
+    ){
+
+    }
+
+    public void updateOdometry(){
+
     }
 }
