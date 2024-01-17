@@ -4,13 +4,9 @@
 
 package frc.robot;
 
-import com.kauailabs.navx.frc.AHRS;
-
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
@@ -23,7 +19,8 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 public class Robot extends TimedRobot {
 
   private static Drivetrain m_drive = new Drivetrain();
-  private static Shooter m_shooter = new Shooter(0, 0);
+  //private static Shooter m_shooter = new Shooter(0, 0);
+  //private static Intake m_intake = new Intake(0, 0);
   private static XboxController m_controller = new XboxController(0);
 
  

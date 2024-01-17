@@ -21,10 +21,10 @@ public class Drivetrain {
     private final Translation2d m_backRightLocation = new Translation2d(0, 0);
 
     // Create Swerve Module Objects
-    private final SwerveModule m_frontLeft = new SwerveModule(23, 22, 0);
-    private final SwerveModule m_frontRight = new SwerveModule(17, 16, 0);
-    private final SwerveModule m_backLeft = new SwerveModule(21, 20, 0);
-    private final SwerveModule m_backRight = new SwerveModule(19, 18, 0);
+    private final SwerveModule m_frontLeft = new SwerveModule(23, 22, 5);
+    private final SwerveModule m_frontRight = new SwerveModule(17, 16, 2);
+    private final SwerveModule m_backLeft = new SwerveModule(21, 20, 3);
+    private final SwerveModule m_backRight = new SwerveModule(19, 18, 4);
 
     // Setup NavX Gyro
     private final AHRS m_gyro = new AHRS(SerialPort.Port.kMXP);
