@@ -1,5 +1,7 @@
 package frc.robot.subsystems.drivetrain;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -12,19 +14,22 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModule {
 
     // Establish Swerve Module Constants
-    private static final double kWheelRadius = 0.058;
     private static final double kModuleMaxAngularVelocity = Drivetrain.kMaxAngularSpeed;
-    private static final double kModuleMaxAngularAcceleration = 2 * Math.PI; 
+    private static final double kModuleMaxAngularAcceleration = 2 * Math.PI;
+    private static final double kWheelDiameter = 0.102; // in meters
+    private static final double kDriveGearRatio = 6.75;
 
     // Create Variables for Motor and Encoder
     private final CANSparkMax m_driveMotor;
     private final RelativeEncoder m_driveEncoder;
     private final CANSparkMax m_turnMotor;
     private final CANcoder m_turnEncoder;
+    private final CANcoderConfiguration m_turnEncoderConfig = new CANcoderConfiguration();
 
     // Create PID Controllers and set Gains
     private final PIDController m_drivePIDController = new PIDController(1, 0, 0);
@@ -38,11 +43,16 @@ public class SwerveModule {
 
 
     public SwerveModule(int turnMotorID, int driveMotorID, int turnEncoderID){
+
         m_turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
         m_driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
         m_turnPIDContoller.enableContinuousInput(-Math.PI, Math.PI);
+        // Setup Turn Encoder
         m_turnEncoder = new CANcoder(turnEncoderID);
+        // Setup Drive Encoder
         m_driveEncoder = m_driveMotor.getEncoder();
+        m_driveEncoder.setPositionConversionFactor( Math.PI * kWheelDiameter / kDriveGearRatio );
+        m_driveEncoder.setVelocityConversionFactor( Math.PI * kWheelDiameter / kDriveGearRatio );
     }
 
     public SwerveModuleState getState(){
@@ -52,10 +62,9 @@ public class SwerveModule {
     }
 
     // returns current position of the module
-
     public SwerveModulePosition getPosition(){
         return new SwerveModulePosition(
-            //m_driveEncoder.getPosition().getValue(), new Rotation2d(m_turnEncoder.getPosition().getValue())
+            m_driveEncoder.getPosition(), new Rotation2d(m_turnEncoder.getPosition().getValue())
         );
     }
 

@@ -16,16 +16,19 @@ public class Drivetrain {
     public static final double kMaxAngularSpeed = Math.PI;
 
     // Establish Drivetrain Geometry
-    private final Translation2d m_frontLeftLocation = new Translation2d(0, 0);
-    private final Translation2d m_frontRightLocation = new Translation2d(0, 0);
-    private final Translation2d m_backLeftLocation = new Translation2d(0, 0);
-    private final Translation2d m_backRightLocation = new Translation2d(0, 0);
+    /*
+     * 
+     */
+    private final Translation2d m_frontLeftLocation = new Translation2d(-0.63/2, 0.63/2);
+    private final Translation2d m_frontRightLocation = new Translation2d(0.63/2, 0.63/2);
+    private final Translation2d m_backLeftLocation = new Translation2d(-0.63/2, -0.63/2);
+    private final Translation2d m_backRightLocation = new Translation2d(0.63/2, -0.63/2);
 
     // Create Swerve Module Objects
-    private final SwerveModule m_frontLeft = new SwerveModule(23, 22, 5);
-    private final SwerveModule m_frontRight = new SwerveModule(17, 16, 2);
-    private final SwerveModule m_backLeft = new SwerveModule(21, 20, 3);
-    private final SwerveModule m_backRight = new SwerveModule(19, 18, 4);
+    private final SwerveModule m_frontLeft = new SwerveModule(23, 22, 30);
+    private final SwerveModule m_frontRight = new SwerveModule(17, 16, 31);
+    private final SwerveModule m_backLeft = new SwerveModule(21, 20, 32);
+    private final SwerveModule m_backRight = new SwerveModule(19, 18, 33);
 
     // Setup NavX Gyro
     private final AHRS m_gyro = new AHRS(SerialPort.Port.kMXP);

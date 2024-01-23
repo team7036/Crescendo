@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -18,12 +21,15 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
  */
 public class Robot extends TimedRobot {
 
-  private static Drivetrain m_drive = new Drivetrain();
+  private static Drivetrain m_swerve = new Drivetrain();
   //private static Shooter m_shooter = new Shooter(0, 0);
   //private static Intake m_intake = new Intake(0, 0);
   private static XboxController m_controller = new XboxController(0);
 
- 
+  private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(3);
+  private final SlewRateLimiter m_ySpeedlimiter = new SlewRateLimiter(3);
+  private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -80,6 +86,30 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+
+    driveWithJoystick(true);
+
+  }
+
+  private void driveWithJoystick(boolean fieldRelative){
+    // getting x speed. inverted bc xbox controllers return negative
+    // values when pushed forward
+    final var xSpeed =
+      -m_xSpeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getLeftY(), 0.02)) * Drivetrain.kMaxSpeed;
+
+    // getting y speed or sideways/strafe speed. inverting because we want a
+    // positive value when we pull to the left
+    // xbox controllers return positive value when pulled to the right
+    final var ySpeed =
+      -m_ySpeedlimiter.calculate(MathUtil.applyDeadband(m_controller.getLeftX(), 0.02)) * Drivetrain.kMaxSpeed;
+
+    // getting rate of angular rotation. inverting bc we want a positive value
+    // when pulled to the left (CCW is positive in math). xbox controllers return
+    // positive value when pulled to the right 
+    final var rot =
+      -m_rotLimiter.calculate(MathUtil.applyDeadband(m_controller.getRightX(), 0.02)) * Drivetrain.kMaxAngularSpeed;
+
+    m_swerve.drive(xSpeed, ySpeed, rot, fieldRelative, getPeriod());
   }
 
   /** This function is called once when the robot is first started up. */
