@@ -1,76 +1,77 @@
 package frc.robot.subsystems;
 
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-
-
 public class Vision {
-    /*
-     * Finds brightest target on Camera
-     * 
-     */
 
-    private final static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    public final double startingDistance = 101.9175; //centimers
 
-    private enum LightMode {
-        PIPELINE_DEFAULT,
-        OFF,
-        BLINK,
-        ON
-    }
-
-    private enum CamMode {
-        Vision_Processor,
-        Driver_Camera
-    }
-
-    private enum PipelineNumber {
-        Zero,
-        One,
-        Two,
-        Three,
-        Four,
-        Five,
-        Six,
-        Seven,
-        Eight,
-        Nine
+    public enum SetPipeline {
+        ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE;
     }
     
-    public static boolean hasTarget() { //is target detected by limelight
-        return table.getEntry("tv").getDouble(0) == 1;
+    public enum LightMode {
+        CURRENT_PIPELINE, OFF, BLINK, ON;
     }
 
-    public static double getTargetX() { //horizontal difference between the center of the target and camera crosshair
-        return table.getEntry("tx").getDouble(0.00);
+    public enum CamMode {
+        ZERO, ONE;
+    } 
+
+    public boolean targetInView() { //can limelight see april tag
+        return table.getEntry("targetInView").getBoolean(false) == true;
     }
 
-    public static double getTargetY() { //vertical differerence between the center of the target and camera crosshair
-        return table.getEntry("ty").getDouble(0.00);
+    public double xTargetDifference() { //difference between y-coordinate of target center and crosshair
+        return table.getEntry("xTargetDifference").getDouble(0.0); //horizontal error (should be set to a tested value)
     }
 
-    public static double getTargetArea() { //area (in terms of percentage) of the camera that the target takes up
-        return table.getEntry("ta").getDouble(0.00);
+    public double yTargetDifference() { //difference between x-coordinate of target center and crosshair
+     return table.getEntry("yTargetDifference").getDouble(0.0); 
     }
 
-    public static double getTargetSkew() {//Gets target skew(rotation) 
-        return table.getEntry("ts").getDouble(0.00);
-    }
-    public static boolean setLedMode(LightMode mode) { //current mode of the LEDs on the limelight (0 for pipeline default, 1 for off, 2 for blink, 3 for on)
-        return table.getEntry("ledMode").setNumber(mode.ordinal());
+    public double targetArea() { //percentage from 0 to 100
+        return table.getEntry("targetArea").getDouble(0.0);
     }
 
-    public static boolean setCamMode(CamMode mode) {//Camera mode of operation
-        return table.getEntry("camMode").setNumber(mode.ordinal());
+    public double targetLatency() {
+        return table.getEntry("latency").getDouble(0.0) / 1000; //sample image latency (ms)
     }
 
-    public static boolean setLimelightPipeline(PipelineNumber mode) {
-        return table.getEntry("pipelineNumber").setNumber(mode.ordinal());
+    public double[] getXCorners() { //clockwise starting top left
+        return table.getEntry("XCorners").getDoubleArray(getXCorners());
     }
 
-    //next is to upload these values to smartdashboard
+    public double[] getYCorners() { //clockwise starting top left
+        return table.getEntry("YCorners").getDoubleArray(getYCorners());
+    }
+
+    public double expectedDistance() {
+        //log this to networktable: (147(bottom) - 174(top) cm - heightOfCamera from ground) / tan(cameraAngle + Ay/2*FOV vertical) 
+        return table.getEntry("expectedDistance").getDouble(0.0); //calculated distance (cm) from apriltag
+    }
+
+    public double apriltagPercentage() { 
+        if (/*during auton*/ targetArea() >= 45 && expectedDistance() > 15 /* in cm*/) {
+            Shooter.m_shooterLeft.set(Shooter.speed); //make shooter_left public, access shooter speed
+            Shooter.m_shooterRight.set(Shooter.speed); //make shooter_right public, access shooter speed
+        }
+    }
+
+    public void setLedMode() {
+        table.getEntry("ledMode").setNumber(LightMode.CURRENT_PIPELINE.ordinal());
+    }    
+
+    public void setPipeline() {
+        table.getEntry("pipelineNumber").setNumber(SetPipeline.ZERO.ordinal());
+    }
+
+     public void setCamMode() {
+        table.getEntry("camMode").setNumber(CamMode.ZERO.ordinal());
+    }
+
+    public void stop() { //stops all running systems
+    }
 }
