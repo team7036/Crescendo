@@ -24,12 +24,12 @@ public class Vision {
         return table.getEntry("targetInView").getBoolean(false) == true;
     }
 
-    public double xTargetDifference() { //difference between y-coordinate of target center and crosshair
-        return table.getEntry("xTargetDifference").getDouble(0.0); //horizontal error (should be set to a tested value)
+    public double horizontalDifference() { //Horizontal Offset From Crosshair To Target (-27 degrees to 27 degrees)
+        return table.getEntry("horizontalDifference").getDouble(0.0);
     }
 
-    public double yTargetDifference() { //difference between x-coordinate of target center and crosshair
-     return table.getEntry("yTargetDifference").getDouble(0.0); 
+    public double verticalDifference() { //Vertical Offset From Crosshair To Target (-20.5 degrees to 20.5 degrees)
+     return table.getEntry("verticalDifference").getDouble(0.0); 
     }
 
     public double targetArea() { //percentage from 0 to 100
