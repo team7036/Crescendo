@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 public class Drivetrain {
 
@@ -19,10 +20,10 @@ public class Drivetrain {
     /*
      * 
      */
-    private final Translation2d m_frontLeftLocation = new Translation2d(-0.63/2, 0.63/2);
-    private final Translation2d m_frontRightLocation = new Translation2d(0.63/2, 0.63/2);
-    private final Translation2d m_backLeftLocation = new Translation2d(-0.63/2, -0.63/2);
-    private final Translation2d m_backRightLocation = new Translation2d(0.63/2, -0.63/2);
+    private final Translation2d m_frontLeftLocation = new Translation2d(-0.63 / 2, 0.63 / 2);
+    private final Translation2d m_frontRightLocation = new Translation2d(0.63 / 2, 0.63 / 2);
+    private final Translation2d m_backLeftLocation = new Translation2d(-0.63 / 2, -0.63 / 2);
+    private final Translation2d m_backRightLocation = new Translation2d(0.63 / 2, -0.63 / 2);
 
     // Create Swerve Module Objects
     private final SwerveModule m_frontLeft = new SwerveModule(23, 22, 30);
@@ -35,30 +36,27 @@ public class Drivetrain {
 
     // Establish Variables for Kinematics and Odemetry
     private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
-        m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+            m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
     private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
-        m_kinematics, 
-        m_gyro.getRotation2d(),
-        new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_backLeft.getPosition(),
-            m_backRight.getPosition()
-        }
-    );
+            m_kinematics,
+            m_gyro.getRotation2d(),
+            new SwerveModulePosition[] {
+                    m_frontLeft.getPosition(),
+                    m_frontRight.getPosition(),
+                    m_backLeft.getPosition(),
+                    m_backRight.getPosition()
+            });
 
     public Drivetrain() {
         m_gyro.reset();
     }
 
-    public void drive(
-        double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds
-    ){
-        var swerveModuleStates =
-            m_kinematics.toSwerveModuleStates(ChassisSpeeds.discretize(fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                xSpeed, ySpeed, rot, m_gyro.getRotation2d()) 
-                : new ChassisSpeeds(xSpeed, ySpeed, rot), periodSeconds));
+    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {
+        var swerveModuleStates = m_kinematics.toSwerveModuleStates(
+                ChassisSpeeds.discretize(fieldRelative
+                        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyro.getRotation2d())
+                        : new ChassisSpeeds(xSpeed, ySpeed, rot), periodSeconds));
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
         m_frontLeft.setDesiredState(swerveModuleStates[0]);
         m_frontRight.setDesiredState(swerveModuleStates[1]);
@@ -66,13 +64,13 @@ public class Drivetrain {
         m_backRight.setDesiredState(swerveModuleStates[3]);
     }
 
-    public void updateOdometry(){
-        m_odometry.update(m_gyro.getRotation2d(), 
-        new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_backLeft.getPosition(),
-            m_backRight.getPosition()
-        });
+    public void updateOdometry() {
+        m_odometry.update(m_gyro.getRotation2d(),
+                new SwerveModulePosition[] {
+                        m_frontLeft.getPosition(),
+                        m_frontRight.getPosition(),
+                        m_backLeft.getPosition(),
+                        m_backRight.getPosition()
+                });
     }
 }

@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -23,7 +24,7 @@ public class Robot extends TimedRobot {
 
   private static Drivetrain m_swerve = new Drivetrain();
   //private static Shooter m_shooter = new Shooter(0, 0);
-  //private static Intake m_intake = new Intake(0, 0);
+  private static Intake m_intake = new Intake(40);
   private static XboxController m_controller = new XboxController(0);
 
   private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(3);
@@ -46,7 +47,8 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+  }
 
   /**
    */
@@ -87,11 +89,18 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
 
-    driveWithJoystick(true);
+    driveWithJoystick(false);
 
   }
 
   private void driveWithJoystick(boolean fieldRelative){
+
+    if ( m_controller.getRightBumper() ){
+      m_intake.run();
+    } else {
+      m_intake.stop();
+    }
+
     // getting x speed. inverted bc xbox controllers return negative
     // values when pushed forward
     final var xSpeed =

@@ -1,7 +1,5 @@
 package frc.robot.subsystems.drivetrain;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -14,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModule {
@@ -29,7 +28,6 @@ public class SwerveModule {
     private final RelativeEncoder m_driveEncoder;
     private final CANSparkMax m_turnMotor;
     private final CANcoder m_turnEncoder;
-    private final CANcoderConfiguration m_turnEncoderConfig = new CANcoderConfiguration();
 
     // Create PID Controllers and set Gains
     private final PIDController m_drivePIDController = new PIDController(1, 0, 0);
@@ -69,6 +67,7 @@ public class SwerveModule {
     }
 
     public void setDesiredState( SwerveModuleState desiredState ){
+
         var encoderRotation = new Rotation2d(m_turnEncoder.getPosition().getValue());
 
         // Optimize the reference state to avoid spinning further than 90 degrees

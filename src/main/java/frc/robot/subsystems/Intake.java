@@ -1,17 +1,14 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
 public class Intake {
 
-    public Intake(int intakeMotorID, int angleMotorID){
+    CANSparkMax m_intakeMotor;
 
-    }
-
-    public double getAngle(){
-        return 0.0;
-    }
-
-    public void setAngle(){
-
+    public Intake(int intakeMotorCANID){
+        m_intakeMotor = new CANSparkMax(intakeMotorCANID, MotorType.kBrushless);
     }
 
     public boolean isLoaded(){
@@ -21,5 +18,11 @@ public class Intake {
 
     public void run() {
         // pull in note
+        m_intakeMotor.set(-0.5);
     }
+
+    public void stop(){
+        m_intakeMotor.set(0);
+    }
+
 }

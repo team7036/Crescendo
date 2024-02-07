@@ -53,13 +53,6 @@ public class Vision {
         return table.getEntry("expectedDistance").getDouble(0.0); //calculated distance (cm) from apriltag
     }
 
-    public double apriltagPercentage() { 
-        if (/*during auton*/ targetArea() >= 45 && expectedDistance() > 15 /* in cm*/) {
-            Shooter.m_shooterLeft.set(Shooter.speed); //make shooter_left public, access shooter speed
-            Shooter.m_shooterRight.set(Shooter.speed); //make shooter_right public, access shooter speed
-        }
-    }
-
     public void setLedMode() {
         table.getEntry("ledMode").setNumber(LightMode.CURRENT_PIPELINE.ordinal());
     }    
