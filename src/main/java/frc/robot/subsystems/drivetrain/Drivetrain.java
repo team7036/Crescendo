@@ -8,7 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivetrain {
 
@@ -20,10 +20,10 @@ public class Drivetrain {
     /*
      * 
      */
-    private final Translation2d m_frontLeftLocation = new Translation2d(-0.63 / 2, 0.63 / 2);
-    private final Translation2d m_frontRightLocation = new Translation2d(0.63 / 2, 0.63 / 2);
-    private final Translation2d m_backLeftLocation = new Translation2d(-0.63 / 2, -0.63 / 2);
-    private final Translation2d m_backRightLocation = new Translation2d(0.63 / 2, -0.63 / 2);
+    private final Translation2d m_frontLeftLocation = new Translation2d(0.63/2, -0.63/2);
+    private final Translation2d m_frontRightLocation = new Translation2d(0.63/2, 0.63/2);
+    private final Translation2d m_backLeftLocation = new Translation2d(-0.63/2, -0.63/2);
+    private final Translation2d m_backRightLocation = new Translation2d(-0.63/2, 0.63/2);
 
     // Create Swerve Module Objects
     private final SwerveModule m_frontLeft = new SwerveModule(23, 22, 30);
@@ -50,6 +50,10 @@ public class Drivetrain {
 
     public Drivetrain() {
         m_gyro.reset();
+        SmartDashboard.putData("Back Left Swerve", m_backLeft);
+        SmartDashboard.putData("Back Right Swerve", m_backRight);
+        SmartDashboard.putData("Front Left Swerve", m_frontLeft);
+        SmartDashboard.putData("Front Right Swerve", m_frontRight);
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {

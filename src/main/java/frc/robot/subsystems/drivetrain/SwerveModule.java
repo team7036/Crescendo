@@ -12,10 +12,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 
-public class SwerveModule {
+public class SwerveModule implements Sendable{
 
     // Establish Swerve Module Constants
     private static final double kModuleMaxAngularVelocity = Drivetrain.kMaxAngularSpeed;
@@ -39,7 +39,6 @@ public class SwerveModule {
     private final SimpleMotorFeedforward m_driveFeedForward = new SimpleMotorFeedforward(1, 3);
     private final SimpleMotorFeedforward m_turnFeedForward = new SimpleMotorFeedforward(1, 0.5);
 
-
     public SwerveModule(int turnMotorID, int driveMotorID, int turnEncoderID){
 
         m_turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
@@ -49,26 +48,60 @@ public class SwerveModule {
         m_turnEncoder = new CANcoder(turnEncoderID);
         // Setup Drive Encoder
         m_driveEncoder = m_driveMotor.getEncoder();
-        m_driveEncoder.setPositionConversionFactor( Math.PI * kWheelDiameter / kDriveGearRatio );
-        m_driveEncoder.setVelocityConversionFactor( Math.PI * kWheelDiameter / kDriveGearRatio );
+        m_driveEncoder.setPositionConversionFactor( Math.PI * kWheelDiameter / kDriveGearRatio ); // Convert from Rotations to meters
+        m_driveEncoder.setVelocityConversionFactor( Math.PI * kWheelDiameter / kDriveGearRatio / 60 ); // Convert from RPM to m/s
+    }
+
+    public double getTurnPosition(){
+        return m_turnEncoder.getAbsolutePosition().getValue() * 2 * Math.PI;
+    }
+
+    public void setTurnPosition(double angle){ // in rad
+
+        final double turnOutput = 
+            m_turnPIDContoller.calculate(this.getTurnPosition(), angle);
+
+        final double turnFeedFoward = 
+            m_turnFeedForward.calculate(m_turnPIDContoller.getSetpoint().velocity);
+
+        m_turnMotor.setVoltage(turnOutput + turnFeedFoward);
+
+    }
+
+    public double getDrivePosition(){
+        return m_driveEncoder.getPosition();
+    }
+
+    public double getDriveVelocity(){ // in m/s
+        return m_driveEncoder.getVelocity();
+    }
+
+    public void setDriveVelocity(double velocity){ // in m/s
+
+        final double driveOutput = 
+            m_drivePIDController.calculate(this.getDriveVelocity(), velocity);
+
+        final double driveFeedForward = 
+            m_driveFeedForward.calculate(velocity);
+
+        m_driveMotor.setVoltage(driveOutput + driveFeedForward);
     }
 
     public SwerveModuleState getState(){
         return new SwerveModuleState(
-            m_driveEncoder.getVelocity(), new Rotation2d(m_turnEncoder.getPosition().getValue())
+            this.getDriveVelocity(), new Rotation2d(this.getTurnPosition())
         );
     }
 
-    // returns current position of the module
     public SwerveModulePosition getPosition(){
         return new SwerveModulePosition(
-            m_driveEncoder.getPosition(), new Rotation2d(m_turnEncoder.getPosition().getValue())
+            this.getDrivePosition(), new Rotation2d(this.getTurnPosition())
         );
     }
 
     public void setDesiredState( SwerveModuleState desiredState ){
 
-        var encoderRotation = new Rotation2d(m_turnEncoder.getPosition().getValue());
+        var encoderRotation = new Rotation2d( this.getTurnPosition() );
 
         // Optimize the reference state to avoid spinning further than 90 degrees
         SwerveModuleState state = SwerveModuleState.optimize(desiredState, encoderRotation);
@@ -78,22 +111,18 @@ public class SwerveModule {
         // driving.
         state.speedMetersPerSecond *= state.angle.minus(encoderRotation).getCos();
 
-        // Calculate the drive output from the drive PID controller.
-        final double driveOutput = 
-            m_drivePIDController.calculate(m_driveEncoder.getVelocity(), state.speedMetersPerSecond);
+        this.setDriveVelocity(state.speedMetersPerSecond);
+        this.setTurnPosition(state.angle.getRadians());
 
-        final double driveFeedForward = 
-            m_driveFeedForward.calculate(state.speedMetersPerSecond);
+    }
 
-        // Calculate the turning motor output from the turning PID controller.
-        final double turnOutput = 
-            m_turnPIDContoller.calculate(m_turnEncoder.getPosition().getValue(), state.angle.getRadians());
-
-        final double turnFeedFoward = 
-            m_turnFeedForward.calculate(m_turnPIDContoller.getSetpoint().velocity);
-
-        m_driveMotor.setVoltage(driveOutput + driveFeedForward);
-        m_turnMotor.setVoltage(turnOutput + turnFeedFoward);
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        // TODO Auto-generated method stub
+        builder.setSmartDashboardType("Swerve Module");
+        builder.addDoubleProperty("Turn Position", this::getTurnPosition, this::setTurnPosition);
+        builder.addDoubleProperty("Drive Velocity", this::getDriveVelocity, this::setDriveVelocity);
+        builder.addDoubleProperty("Drive Position", this::getDrivePosition, null);
     }
 
 }
