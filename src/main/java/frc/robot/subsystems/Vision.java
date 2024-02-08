@@ -5,66 +5,102 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Vision {
 
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     public final double startingDistance = 101.9175; //centimers
 
-    public enum SetPipeline {
-        ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE;
-    }
-    
-    public enum LightMode {
-        CURRENT_PIPELINE, OFF, BLINK, ON;
+    private static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+
+    public enum LedMode {
+        PIPELINE, OFF, BLINK, ON
     }
 
-    public enum CamMode {
-        ZERO, ONE;
-    } 
-
-    public boolean targetInView() { //can limelight see april tag
-        return table.getEntry("targetInView").getBoolean(false) == true;
+    public enum CameraMode {
+        VISION, CAMERA
     }
 
-    public double horizontalDifference() { //Horizontal Offset From Crosshair To Target (-27 degrees to 27 degrees)
-        return table.getEntry("horizontalDifference").getDouble(0.0);
+    public enum Pipeline {
+        _0, _1, _2, _3, _4, _5, _6, _7, _8, _9
     }
 
-    public double verticalDifference() { //Vertical Offset From Crosshair To Target (-20.5 degrees to 20.5 degrees)
-     return table.getEntry("verticalDifference").getDouble(0.0); 
+    public enum Stream {
+        STANDARD, SECONDARY, PRIMARY
     }
 
-    public double targetArea() { //percentage from 0 to 100
-        return table.getEntry("targetArea").getDouble(0.0);
+    public enum BotPoseOptions {
+        WPIBLUE,
+        WPIRED,
+        TARGETSPACE
     }
 
-    public double targetLatency() {
-        return table.getEntry("latency").getDouble(0.0) / 1000; //sample image latency (ms)
+    public enum PoseOptions {
+        ROBOTSPACE,
+        TARGETSPACE
     }
 
-    public double[] getXCorners() { //clockwise starting top left
-        return table.getEntry("XCorners").getDoubleArray(getXCorners());
+    public static boolean hasValidTargets() { // Whether the limelight has any valid targets (0 or 1)
+        return table.getEntry("tv").getDouble(0) == 1;
     }
 
-    public double[] getYCorners() { //clockwise starting top left
-        return table.getEntry("YCorners").getDoubleArray(getYCorners());
+    public static double getHorizontalOffset(){ // Horizontal Offset From Crosshair To Target (LL1: -27 degrees to 27 degrees / LL2: -29.8 to 29.8 degrees)
+        return table.getEntry("tx").getDouble(0.0);
     }
 
-    public double expectedDistance() {
-        //log this to networktable: (147(bottom) - 174(top) cm - heightOfCamera from ground) / tan(cameraAngle + Ay/2*FOV vertical) 
-        return table.getEntry("expectedDistance").getDouble(0.0); //calculated distance (cm) from apriltag
+    public static double getVerticalOffset(){ // Vertical Offset From Crosshair To Target (LL1: -20.5 degrees to 20.5 degrees / LL2: -24.85 to 24.85 degrees)
+        return table.getEntry("ty").getDouble(0.0);
     }
 
-    public void setLedMode() {
-        table.getEntry("ledMode").setNumber(LightMode.CURRENT_PIPELINE.ordinal());
-    }    
-
-    public void setPipeline() {
-        table.getEntry("pipelineNumber").setNumber(SetPipeline.ZERO.ordinal());
+    public static double getTargetArea(){ // Target Area (0% of image to 100% of image)
+        return table.getEntry("ta").getDouble(0.0);
     }
 
-     public void setCamMode() {
-        table.getEntry("camMode").setNumber(CamMode.ZERO.ordinal());
+    public static double getPipelineLatency(){ // The pipeline's latency contribution (ms). Add to "cl" to get total latency.
+        return table.getEntry("tl").getDouble(0.0);
     }
 
-    public void stop() { //stops all running systems
+    public static double getTotalLatency(){ // Capture pipeline latency (ms). Time between the end of the exposure of the middle row of the sensor to the beginning of the tracking pipeline.
+        return table.getEntry("cl").getDouble(0.0);
+    }
+
+    public static class AprilTag {
+
+        public static double[] getBotPose(){
+            return table.getEntry("botpose").getDoubleArray(new double[6]);
+        }
+
+        public static double[] getBotPose(BotPoseOptions pose){
+            return table.getEntry("botpose_"+pose.toString().toLowerCase()).getDoubleArray(new double[6]);
+        }
+
+        public static double[] getCameraPose(PoseOptions pose){
+            return table.getEntry("camerapose_"+pose.toString().toLowerCase()).getDoubleArray(new double[6]);
+        }
+
+        public static double[] getTargetPose(PoseOptions pose){
+            return table.getEntry("targetpose_"+pose.toString().toLowerCase()).getDoubleArray(new double[6]);
+        }
+
+        public static double[] getID(){
+            return table.getEntry("tid").getDoubleArray(new double[6]);
+        }
+
+    }
+
+    public static class Camera {
+
+        public static void setLedMode(LedMode mode){
+            table.getEntry("ledMode").setNumber(mode.ordinal());
+        }
+
+        public static void setCamMode(CameraMode mode){
+            table.getEntry("camMode").setNumber(mode.ordinal());
+        }
+
+        public static void setPipeline(Pipeline pipeline){
+            table.getEntry("pipeline").setNumber(pipeline.ordinal());
+        }
+
+        public static void setStream(Stream stream){
+            table.getEntry("pipeline").setNumber(stream.ordinal());
+        }
+
     }
 }
