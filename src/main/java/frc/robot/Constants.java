@@ -4,6 +4,40 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 public interface Constants {
 
+    public enum RobotState {
+        /*TODO */
+    }
+
+    public interface Vision {
+    
+        public enum LedMode {
+            PIPELINE, OFF, BLINK, ON
+        }
+    
+        public enum CameraMode {
+            VISION, CAMERA
+        }
+    
+        public enum Pipeline {
+            _0, _1, _2, _3, _4, _5, _6, _7, _8, _9
+        }
+    
+        public enum Stream {
+            STANDARD, SECONDARY, PRIMARY
+        }
+    
+        public enum BotPoseOptions {
+            WPIBLUE,
+            WPIRED,
+            TARGETSPACE
+        }
+    
+        public enum PoseOptions {
+            ROBOTSPACE,
+            TARGETSPACE
+        }
+    }
+
     public interface Controllers {
         int DRIVER = 0;
     }
@@ -14,8 +48,8 @@ public interface Constants {
             double WHEEL_DIAMETER = 0.102;
             double GEAR_RATIO = 6.75;
             double MAX_DRIVE_SPEED = 3.0;
-            double MAX_ANGULAR_VELOCITY = Math.PI;
-            double MAX_ANGULAR_ACCELERATION = Math.PI;
+            double MAX_ANGULAR_VELOCITY = 2 * Math.PI;
+            double MAX_ANGULAR_ACCELERATION = 2 * Math.PI;
             double POSITION_CONVERSION_FACTOR = Math.PI * WHEEL_DIAMETER / GEAR_RATIO;
             double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR / 60;
         }
@@ -26,6 +60,7 @@ public interface Constants {
             Translation2d BACK_LEFT = new Translation2d(-0.63/2, -0.63/2);
             Translation2d BACK_RIGHT = new Translation2d(-0.63/2, 0.63/2);
         }
+
         public interface Ports {
             int FL_DRIVE = 22;
             int FL_TURN = 23;
@@ -54,12 +89,12 @@ public interface Constants {
     public interface Shooter {
 
         public enum Mode {
-            DISABLED,
-            TEST,
-            INTAKE,
-            AUTO_AIM,
-            MANUAL_AIM,
-            FIRE,
+            READY_TO_INTAKE,
+            INTAKING,
+            AUTO_AIMING,
+            MANUAL_AIMING,
+            FIRING,
+            READY_TO_FIRE,
             IDLE
         }
 
@@ -85,7 +120,11 @@ public interface Constants {
             double VELOCITY_CONVERSION = 0.0;
         }
 
-        double SPEED_CONVERSION = 10/18;
+        public interface FlyWheels {
+            double SPEED_CONVERSION = 10/18;
+            double SHOOTING_SPEED = 2500;
+        }
+
         double INTAKE_ANGLE = 0.2;
         double INTAKE_SPEED = -100;
     }

@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.shooter;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -56,6 +56,10 @@ public class Arm extends ProfiledPIDSubsystem {
     @Override
     protected double getMeasurement() {
         return encoder.getPosition();
+    }
+
+    public void initSendable(SendableBuilder builder){
+        builder.addDoubleProperty("angle", this::getMeasurement, null);
     }
 
 }

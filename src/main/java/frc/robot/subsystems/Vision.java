@@ -3,38 +3,12 @@ package frc.robot.subsystems;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-public class Vision {
+import frc.robot.Constants;
 
-    public final double startingDistance = 101.9175; //centimeters
+public class Vision {
 
     private static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
-    public enum LedMode {
-        PIPELINE, OFF, BLINK, ON
-    }
-
-    public enum CameraMode {
-        VISION, CAMERA
-    }
-
-    public enum Pipeline {
-        _0, _1, _2, _3, _4, _5, _6, _7, _8, _9
-    }
-
-    public enum Stream {
-        STANDARD, SECONDARY, PRIMARY
-    }
-
-    public enum BotPoseOptions {
-        WPIBLUE,
-        WPIRED,
-        TARGETSPACE
-    }
-
-    public enum PoseOptions {
-        ROBOTSPACE,
-        TARGETSPACE
-    }
 
     public static boolean hasValidTargets() { // Whether the limelight has any valid targets (0 or 1)
         return table.getEntry("tv").getDouble(0) == 1;
@@ -66,15 +40,15 @@ public class Vision {
             return table.getEntry("botpose").getDoubleArray(new double[6]);
         }
 
-        public static double[] getBotPose(BotPoseOptions pose){
+        public static double[] getBotPose(Constants.Vision.BotPoseOptions pose){
             return table.getEntry("botpose_"+pose.toString().toLowerCase()).getDoubleArray(new double[6]);
         }
 
-        public static double[] getCameraPose(PoseOptions pose){
+        public static double[] getCameraPose(Constants.Vision.PoseOptions pose){
             return table.getEntry("camerapose_"+pose.toString().toLowerCase()).getDoubleArray(new double[6]);
         }
 
-        public static double[] getTargetPose(PoseOptions pose){
+        public static double[] getTargetPose(Constants.Vision.PoseOptions pose){
             return table.getEntry("targetpose_"+pose.toString().toLowerCase()).getDoubleArray(new double[6]);
         }
 
@@ -87,19 +61,19 @@ public class Vision {
 
     public static class Camera {
 
-        public static void setLedMode(LedMode mode){
+        public static void setLedMode(Constants.Vision.LedMode mode){
             table.getEntry("ledMode").setNumber(mode.ordinal());
         }
 
-        public static void setCamMode(CameraMode mode){
+        public static void setCamMode(Constants.Vision.CameraMode mode){
             table.getEntry("camMode").setNumber(mode.ordinal());
         }
 
-        public static void setPipeline(Pipeline pipeline){
+        public static void setPipeline(Constants.Vision.Pipeline pipeline){
             table.getEntry("pipeline").setNumber(pipeline.ordinal());
         }
 
-        public static void setStream(Stream stream){
+        public static void setStream(Constants.Vision.Stream stream){
             table.getEntry("pipeline").setNumber(stream.ordinal());
         }
 
