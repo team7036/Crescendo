@@ -5,7 +5,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Vision {
 
-    public final double startingDistance = 101.9175; //centimers
+    public final double startingDistance = 101.9175; //centimeters
 
     private static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
@@ -79,6 +79,7 @@ public class Vision {
         }
 
         public static double[] getID(){
+            // why is the double array 6
             return table.getEntry("tid").getDoubleArray(new double[6]);
         }
 

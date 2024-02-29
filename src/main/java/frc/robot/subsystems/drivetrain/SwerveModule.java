@@ -14,14 +14,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import frc.robot.Constants.Drivetrain.Swerve;
 
-public class SwerveModule implements Sendable{
-
-    // Establish Swerve Module Constants
-    private static final double kModuleMaxAngularVelocity = Drivetrain.kMaxAngularSpeed;
-    private static final double kModuleMaxAngularAcceleration = 2 * Math.PI;
-    private static final double kWheelDiameter = 0.102; // in meters
-    private static final double kDriveGearRatio = 6.75;
+public class SwerveModule implements Sendable {
 
     // Create Variables for Motor and Encoder
     private final CANSparkMax m_driveMotor;
@@ -32,7 +27,7 @@ public class SwerveModule implements Sendable{
     // Create PID Controllers and set Gains
     private final PIDController m_drivePIDController = new PIDController(1, 0, 0);
 
-    private final TrapezoidProfile.Constraints turningConstraints = new TrapezoidProfile.Constraints(kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration);
+    private final TrapezoidProfile.Constraints turningConstraints = new TrapezoidProfile.Constraints(Swerve.MAX_ANGULAR_VELOCITY, Swerve.MAX_ANGULAR_ACCELERATION);
     private final ProfiledPIDController m_turnPIDContoller = new ProfiledPIDController(1, 0, 0, turningConstraints);
 
     // Setup Motor Feeds
@@ -48,8 +43,8 @@ public class SwerveModule implements Sendable{
         m_turnEncoder = new CANcoder(turnEncoderID);
         // Setup Drive Encoder
         m_driveEncoder = m_driveMotor.getEncoder();
-        m_driveEncoder.setPositionConversionFactor( Math.PI * kWheelDiameter / kDriveGearRatio ); // Convert from Rotations to meters
-        m_driveEncoder.setVelocityConversionFactor( Math.PI * kWheelDiameter / kDriveGearRatio / 60 ); // Convert from RPM to m/s
+        m_driveEncoder.setPositionConversionFactor( Swerve.POSITION_CONVERSION_FACTOR ); // Convert from Rotations to meters
+        m_driveEncoder.setVelocityConversionFactor( Swerve.VELOCITY_CONVERSION_FACTOR ); // Convert from RPM to m/s
     }
 
     public double getTurnPosition(){
@@ -119,10 +114,10 @@ public class SwerveModule implements Sendable{
     @Override
     public void initSendable(SendableBuilder builder) {
         // TODO Auto-generated method stub
-        builder.setSmartDashboardType("Swerve Module");
-        builder.addDoubleProperty("Turn Position", this::getTurnPosition, this::setTurnPosition);
-        builder.addDoubleProperty("Drive Velocity", this::getDriveVelocity, this::setDriveVelocity);
-        builder.addDoubleProperty("Drive Position", this::getDrivePosition, null);
+        builder.setSmartDashboardType("swervemodule");
+        builder.addDoubleProperty("turn/position", this::getTurnPosition, this::setTurnPosition);
+        builder.addDoubleProperty("drive/velocity", this::getDriveVelocity, this::setDriveVelocity);
+        builder.addDoubleProperty("drive/position", this::getDrivePosition, null);
     }
 
 }

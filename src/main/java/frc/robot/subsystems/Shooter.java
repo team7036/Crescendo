@@ -2,70 +2,99 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.Constants.Shooter.Mode;
 
-public class Shooter {
+public class Shooter extends SubsystemBase {
 
-    // Constants
-    private double maxShooterAcceleration = 1.0; // TODO
-    private double maxAngleVelocity = 1.0; // TODO
+    public Mode mode = Mode.IDLE;
 
-    // Shooter Motors
-    private double maxMotorSpeed = 0.0; // TODO
-    private final CANSparkMax m_top;
-    private final CANSparkMax m_bottom;
-    private final RelativeEncoder m_shooterEncoder;
-    private final PIDController m_shooterPID = new PIDController(1, 0, 0); // TODO
-    private final SimpleMotorFeedforward m_shooterFeedForward = new SimpleMotorFeedforward(2, 1); // TODO
-    // Angle Motor
-    private final CANSparkMax m_angle;
-    private final RelativeEncoder m_angleEncoder;
-    private final PIDController m_anglePID = new PIDController(1, 0, 0);
-    private final ArmFeedforward m_angleFeedforward = new ArmFeedforward(1, 0, 0);
+    // Motors
+    private final CANSparkMax motor;
+    private final CANSparkMax bottomMotor;
+    // Encoder
+    private final RelativeEncoder encoder;
+    // Shooter Arm
+    private final Arm arm;
+    // Staging Servo
+    private final Servo stagingServo;
+    // Inputs
+    private DigitalInput sensor;
 
-
-    public Shooter(int topMotorID, int bottomMotorID, int angleMotorID){
-        // Setup Shooting Motors
-        m_top = new CANSparkMax(topMotorID, MotorType.kBrushless);
-        m_top.setIdleMode(IdleMode.kCoast);
-        m_bottom = new CANSparkMax(topMotorID, MotorType.kBrushless);
-        m_bottom.setIdleMode(IdleMode.kCoast);
-        m_bottom.setInverted(true);
-        m_bottom.follow(m_top);
-        m_shooterEncoder = m_top.getEncoder();
-        m_shooterEncoder.setVelocityConversionFactor(1); // TODO
-        // Setup Angle Motor
-        m_angle = new CANSparkMax(angleMotorID, MotorType.kBrushless);
-        m_angleEncoder = m_angle.getEncoder();
-        m_angleEncoder.setPositionConversionFactor(1); // TODO
+    public Shooter(){
+        // Motors
+        motor = new CANSparkMax(Constants.Shooter.Ports.TOP_MOTOR, MotorType.kBrushless);
+        motor.setInverted(true);
+        bottomMotor = new CANSparkMax(Constants.Shooter.Ports.BOTTOM_MOTOR, MotorType.kBrushless);
+        bottomMotor.follow(motor);
+        // Encoder
+        encoder = motor.getEncoder();
+        encoder.setVelocityConversionFactor(Constants.Shooter.SPEED_CONVERSION);
+        // Arm
+        arm = new Arm();
+        // Setup Staging Servo and Sensor
+        stagingServo = new Servo(Constants.Shooter.Ports.STAGING_SERVO);
+        sensor = new DigitalInput(Constants.Shooter.Ports.SENSOR);
     }
 
-    public boolean isLoaded(){
-        return false; // TODO
+    public Command setAngleCommand( double angle ){
+        return this.run(()->{});
     }
 
-    public void setSpeed( double speedRPM ) { // in RPM
-        m_top.setVoltage( m_shooterPID.calculate( this.getSpeed() , speedRPM) + m_shooterFeedForward.calculate(speedRPM, maxShooterAcceleration) );
+    public void setAngle( double angle ){
+        /*
+         * 3 ft -> 1.894
+         */
+        arm.setAngle(angle);
     }
 
-    public double getSpeed() { // in RPM
-        return m_shooterEncoder.getVelocity();
+    @Override
+    public void periodic(){
+        if ( mode == Mode.INTAKE ) {
+            setAngle(0);
+            motor.set(-0.25);
+            stagingServo.setAngle(180);
+        } else if ( mode == Mode.MANUAL_AIM ) {
+            setAngle(1.5);
+            motor.set(0);
+            stagingServo.setAngle(90);
+        } else if ( mode == Mode.FIRE ) {
+            setAngle(1.5);
+            motor.set(1);
+            if ( encoder.getVelocity() < 2500 ){
+                stagingServo.setAngle(90);
+            } else {
+                stagingServo.setAngle(0);
+            }
+        } else {
+            setAngle(0);
+            motor.set(0);
+            stagingServo.setAngle(90);
+        }
     }
 
-    public void setAngle( double angle ) { // in rads
-        m_angle.setVoltage( m_anglePID.calculate( this.getAngle(), angle ) + m_angleFeedforward.calculate(angle, maxAngleVelocity) );
+    @Override
+    public void initSendable(SendableBuilder builder){
+        builder.addDoubleProperty("angle", arm::getMeasurement, null);
     }
 
-    public double getAngle() { // in rads
-        return m_angleEncoder.getPosition();
-    }
 
-    public void aim(){
-        double[] pose = Vision.AprilTag.getBotPose();
-    }
+
 }

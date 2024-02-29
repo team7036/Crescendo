@@ -2,13 +2,18 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
-public class Intake {
+public class Intake extends SubsystemBase {
 
-    CANSparkMax m_intakeMotor;
+    CANSparkMax motor;
+    DigitalInput sensor;
 
-    public Intake(int intakeMotorCANID){
-        m_intakeMotor = new CANSparkMax(intakeMotorCANID, MotorType.kBrushless);
+    public Intake(){
+        motor = new CANSparkMax( Constants.Intake.Ports.MOTOR , MotorType.kBrushless);
+        sensor = new DigitalInput( Constants.Intake.Ports.SENSOR );
     }
 
     public boolean isLoaded(){
@@ -18,11 +23,11 @@ public class Intake {
 
     public void run() {
         // pull in note
-        m_intakeMotor.set(-0.5);
+        motor.set(-1);
     }
 
     public void stop(){
-        m_intakeMotor.set(0);
+        motor.set(0);
     }
 
 }
