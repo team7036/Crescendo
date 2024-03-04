@@ -31,7 +31,7 @@ public class RobotContainer {
 
     // Controls both Driver controller
     public void teleopDrive(){
-        if ( driverController.a().getAsBoolean() ){
+        if (driverController.a().getAsBoolean() ){
             shooter.mode = Mode.INTAKING;
             intake.run();
         }
@@ -55,24 +55,24 @@ public class RobotContainer {
         // A is preset amp angles
         if (operatorController.a().getAsBoolean()) {
             shooter.mode = Mode.AMP_AIM;
-        // B sets the velocity for the motors when aiming at the amp
-        } else if (operatorController.b().getAsBoolean()) {
-            shooter.mode = Mode.AMP_SCORE;
+        // X sets the velocity for the motors when aiming at the amp
+        } if (operatorController.x().getAsBoolean()) {
+            shooter.mode = Mode.AMP_FIRING;
         }
-    
-        // RT fires
-        else if ( operatorController.rightTrigger().getAsBoolean() ){
-            shooter.mode = Mode.FIRING;
-        } 
-        // X is the preset Speaker angle
-        else if( operatorController.x().getAsBoolean() ){
+
+        // B is the preset Speaker angle
+        if(operatorController.b().getAsBoolean() ){
             shooter.mode = Mode.SPEAKER_AIM;
         // Y sets the velocity for the motors when aiming at the speaker
-        } else if ( operatorController.y().getAsBoolean() ){
-            shooter.mode = Mode.SPEAKER_SCORE;
+        } if (operatorController.y().getAsBoolean() ){
+            shooter.mode = Mode.SPEAKER_FIRING;
         } else {
             shooter.mode = Mode.IDLE;
             intake.stop();
+        }
+        // RT drops the note into the firing mechanism, shooting the note, but only if the shooter is already in a firing mode
+        if (operatorController.rightTrigger().getAsBoolean() && shooter.mode == Mode.AMP_FIRING || shooter.mode == Mode.SPEAKER_FIRING){
+            shooter.mode = Mode.SCORE;
         }
     }
 

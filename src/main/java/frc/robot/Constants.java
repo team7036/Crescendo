@@ -126,13 +126,13 @@ public interface Constants {
             INTAKING,
             AUTO_AIMING,
             MANUAL_AIMING,
-            FIRING,
+            SCORE,
             READY_TO_FIRE,
             IDLE,
-            AMP_SCORE,
+            AMP_FIRING,
             AMP_AIM,
             SPEAKER_AIM,
-            SPEAKER_SCORE
+            SPEAKER_FIRING
         }
 
         public interface Ports {

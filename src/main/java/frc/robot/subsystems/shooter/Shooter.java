@@ -48,38 +48,35 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic(){
-
+        // Intake mode intakes a note
         if ( mode == Mode.INTAKING ) {
             arm.setAngle(0);
             flyWheels.setSpeed(-10);
             stagingServo.setAngle(180);
+        // Manual Aiming is not used for now, but it will make the arm be controlled by the joysticks
         } else if ( mode == Mode.MANUAL_AIMING ) {
             arm.setAngle(1.5); //TODO: Change to controlled by joystick
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
-        } else if ( mode == Mode.FIRING ) {
-            arm.setAngle(1.5); // TODO
+        // Speaker firing spins firing motors fast enough to launch the note to the speaker, and makes sure the angle aimed at the speaker
+        } else if ( mode == Mode.SPEAKER_FIRING ) {
+            arm.setAngle( Constants.Shooter.Arm.SPEAKER_ANGLE);
             flyWheels.setSpeed(2500);
-            if ( flyWheels.atSpeed(2500) ){
-                stagingServo.setAngle(0);
-            } else {
-                stagingServo.setAngle(90);
-            }
+        // Amp aim aims the arm at the amp
         } else if ( mode == Mode.AMP_AIM ){
-            arm.setAngle( Constants.Shooter.Arm.AMP_ANGLE );
+            arm.setAngle( Constants.Shooter.Arm.AMP_ANGLE);
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
-        } else if ( mode == Mode.AMP_SCORE ){
-            arm.setAngle(Constants.Shooter.Arm.AMP_ANGLE);
+        // amp firing spins firing motors fast enough to launch the note to the amp, and makes sure the angle aimed at the amp
+        } else if ( mode == Mode.AMP_FIRING ){
+            arm.setAngle( Constants.Shooter.Arm.AMP_ANGLE);
             flyWheels.setSpeed(50);
-            stagingServo.setAngle(0);
+        // speaker aim aims the arm at the speaker
         } else if (mode == Mode.SPEAKER_AIM) {
-            arm.setAngle( Constants.Shooter.Arm.SPEAKER_ANGLE );
+            arm.setAngle( Constants.Shooter.Arm.SPEAKER_ANGLE);
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
-        } else if (mode == Mode.SPEAKER_SCORE) {
-            arm.setAngle(Constants.Shooter.Arm.SPEAKER_ANGLE);
-            flyWheels.setSpeed(200);
+        } else if (mode == Mode.SCORE) {
             stagingServo.setAngle(0);
         }
         else {
