@@ -38,7 +38,11 @@ public class Arm extends ProfiledPIDSubsystem {
         encoder = motor.getEncoder();
         encoder.setPositionConversionFactor(Constants.Shooter.Arm.POSITION_CONVERSION);
         encoder.setVelocityConversionFactor(Constants.Shooter.Arm.VELOCITY_CONVERSION);
-        feedforward = new ArmFeedforward(1, 0, 0);
+        feedforward = new ArmFeedforward(
+            Constants.Shooter.Arm.Feedforward.kS, 
+            Constants.Shooter.Arm.Feedforward.kG, 
+            Constants.Shooter.Arm.Feedforward.kV
+        );
     }
 
     public void setAngle( double angle ){
@@ -59,7 +63,7 @@ public class Arm extends ProfiledPIDSubsystem {
     }
 
     public void initSendable(SendableBuilder builder){
-        builder.addDoubleProperty("angle", this::getMeasurement, null);
+
     }
 
 }

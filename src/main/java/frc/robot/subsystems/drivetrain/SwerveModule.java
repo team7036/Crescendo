@@ -14,6 +14,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.Drivetrain.Swerve;
 
 public class SwerveModule implements Sendable {
@@ -25,14 +28,13 @@ public class SwerveModule implements Sendable {
     private final CANcoder m_turnEncoder;
 
     // Create PID Controllers and set Gains
-    private final PIDController m_drivePIDController = new PIDController(1, 0, 0);
-
-    private final TrapezoidProfile.Constraints turningConstraints = new TrapezoidProfile.Constraints(Swerve.MAX_ANGULAR_VELOCITY, Swerve.MAX_ANGULAR_ACCELERATION);
-    private final ProfiledPIDController m_turnPIDContoller = new ProfiledPIDController(1, 0, 0, turningConstraints);
+    private final PIDController m_drivePIDController = new PIDController(Swerve.Drive.PID.kP, Swerve.Drive.PID.kI, Swerve.Drive.PID.kD);
+    private final TrapezoidProfile.Constraints turningConstraints = new TrapezoidProfile.Constraints( Swerve.Turn.MAX_VELOCITY, Swerve.Turn.MAX_ACCELERATION );
+    private final ProfiledPIDController m_turnPIDContoller = new ProfiledPIDController(Swerve.Turn.PID.kP, Swerve.Turn.PID.kI, Swerve.Turn.PID.kD, turningConstraints);
 
     // Setup Motor Feeds
-    private final SimpleMotorFeedforward m_driveFeedForward = new SimpleMotorFeedforward(1, 3);
-    private final SimpleMotorFeedforward m_turnFeedForward = new SimpleMotorFeedforward(1, 0.5);
+    private final SimpleMotorFeedforward m_driveFeedForward = new SimpleMotorFeedforward(Swerve.Drive.Feedforward.kS, Swerve.Drive.Feedforward.kV);
+    private final SimpleMotorFeedforward m_turnFeedForward = new SimpleMotorFeedforward(Swerve.Turn.Feedforward.kS, Swerve.Turn.Feedforward.kV);
 
     public SwerveModule(int turnMotorID, int driveMotorID, int turnEncoderID){
 
@@ -43,8 +45,8 @@ public class SwerveModule implements Sendable {
         m_turnEncoder = new CANcoder(turnEncoderID);
         // Setup Drive Encoder
         m_driveEncoder = m_driveMotor.getEncoder();
-        m_driveEncoder.setPositionConversionFactor( Swerve.POSITION_CONVERSION_FACTOR ); // Convert from Rotations to meters
-        m_driveEncoder.setVelocityConversionFactor( Swerve.VELOCITY_CONVERSION_FACTOR ); // Convert from RPM to m/s
+        m_driveEncoder.setPositionConversionFactor( Swerve.Drive.POSITION_CONVERSION ); // Convert from Rotations to meters
+        m_driveEncoder.setVelocityConversionFactor( Swerve.Drive.VELOCITY_CONVERSION ); // Convert from RPM to m/s
     }
 
     public double getTurnPosition(){
@@ -63,34 +65,26 @@ public class SwerveModule implements Sendable {
 
     }
 
-    public double getDrivePosition(){
-        return m_driveEncoder.getPosition();
-    }
-
-    public double getDriveVelocity(){ // in m/s
-        return m_driveEncoder.getVelocity();
-    }
-
     public void setDriveVelocity(double velocity){ // in m/s
 
         final double driveOutput = 
-            m_drivePIDController.calculate(this.getDriveVelocity(), velocity);
+            m_drivePIDController.calculate(m_driveEncoder.getVelocity(), velocity);
 
         final double driveFeedForward = 
-            m_driveFeedForward.calculate(velocity);
+            m_driveFeedForward.calculate( velocity );
 
         m_driveMotor.setVoltage(driveOutput + driveFeedForward);
     }
 
     public SwerveModuleState getState(){
         return new SwerveModuleState(
-            this.getDriveVelocity(), new Rotation2d(this.getTurnPosition())
+            m_driveEncoder.getVelocity(), new Rotation2d(this.getTurnPosition())
         );
     }
 
     public SwerveModulePosition getPosition(){
         return new SwerveModulePosition(
-            this.getDrivePosition(), new Rotation2d(this.getTurnPosition())
+            m_driveEncoder.getPosition(), new Rotation2d(this.getTurnPosition())
         );
     }
 
@@ -111,13 +105,20 @@ public class SwerveModule implements Sendable {
 
     }
 
+    public Command setTurnPositionCommand(double angle){
+        return Commands.run(()->setTurnPosition(angle));
+    }
+
     @Override
     public void initSendable(SendableBuilder builder) {
-        // TODO Auto-generated method stub
         builder.setSmartDashboardType("swervemodule");
-        builder.addDoubleProperty("turn/position", this::getTurnPosition, this::setTurnPosition);
-        builder.addDoubleProperty("drive/velocity", this::getDriveVelocity, this::setDriveVelocity);
-        builder.addDoubleProperty("drive/position", this::getDrivePosition, null);
+        SmartDashboard.putData("Turn PID", m_turnPIDContoller);
+        SmartDashboard.putData("turn=0", setTurnPositionCommand(0));
+        SmartDashboard.putData("turn=90", setTurnPositionCommand(Math.PI/2));
+        SmartDashboard.putData("turn=45", setTurnPositionCommand(Math.PI/4));
+        builder.addDoubleProperty("turn/position", this::getTurnPosition, null);
+        builder.addDoubleProperty("drive/velocity", this.m_driveEncoder::getPosition, null);
+        builder.addDoubleProperty("drive/position", this.m_driveEncoder::getVelocity, null);
     }
 
 }

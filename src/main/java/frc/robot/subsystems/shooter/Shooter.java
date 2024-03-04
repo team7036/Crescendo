@@ -22,7 +22,6 @@ public class Shooter extends SubsystemBase {
     private DigitalInput sensor;
 
     public Shooter(){
-        setupDashboard();
         // flywheels
         flyWheels = new FlyWheels();
         // Arm
@@ -32,53 +31,62 @@ public class Shooter extends SubsystemBase {
         sensor = new DigitalInput(Constants.Shooter.Ports.SENSOR);
     }
 
-    private void setupDashboard(){
-        SmartDashboard.putData("Spinup Flywheels", this.setSpeedCommand(1000));
-        SmartDashboard.putData("Set to Shooting Angle", this.setAngleCommand(1.5));
-        SmartDashboard.putData("Set to Intake Angle", this.setAngleCommand(1.5));
-        SmartDashboard.putData("shooter/arm", arm);
-        SmartDashboard.putData("shooter/flywheels", flyWheels);
-    }
-
     public Command setAngleCommand( double angle ){
-        return this.run(()->arm.setAngle(angle))
-            .until(arm.getController()::atSetpoint);
+        return this.runOnce(() -> {
+            arm.setGoal(angle);
+            arm.enable();
+        });
     }
 
     public Command setSpeedCommand( double rpm ){
-        return this.run(() -> flyWheels.setSpeed(rpm))
-            .until( () -> flyWheels.atSpeed(rpm) );
+        return this.runOnce(() -> flyWheels.setSpeed(rpm));
+    }
+
+    public Command idleCommand(){
+        return this.runOnce( () -> flyWheels.idle() );
     }
 
     @Override
     public void periodic(){
-        /*
-                if ( mode == Mode.INTAKE ) {
-            setAngle(0);
-            motor.set(-0.25);
+
+        if ( mode == Mode.INTAKING ) {
+            arm.setAngle(0);
+            flyWheels.setSpeed(-10);
             stagingServo.setAngle(180);
-        } else if ( mode == Mode.MANUAL_AIM ) {
-            motor.set(0);
+        } else if ( mode == Mode.MANUAL_AIMING ) {
+            arm.setAngle(1.5); //TODO: Change to controlled by joystick
+            flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
-        } else if ( mode == Mode.FIRE ) {
-            setAngle(1.5);
-            motor.set(1);
-            if ( encoder.getVelocity() < 2500 ){
-                stagingServo.setAngle(90);
-            } else {
+        } else if ( mode == Mode.FIRING ) {
+            arm.setAngle(1.5); // TODO
+            flyWheels.setSpeed(2500);
+            if ( flyWheels.atSpeed(2500) ){
                 stagingServo.setAngle(0);
+            } else {
+                stagingServo.setAngle(90);
             }
-        } else {
-            setAngle(0);
-            motor.set(0);
+        } else if ( mode == Mode.AMP_AIM ){
+            arm.setAngle( Constants.Shooter.Arm.SPEAKER_ANGLE );
+            flyWheels.setSpeed(0);
+            stagingServo.setAngle(90);
+        } else if ( mode == Mode.AMP_SCORE ){
+            arm.setAngle(Constants.Shooter.Arm.SPEAKER_ANGLE);
+            flyWheels.setSpeed(200);
+            stagingServo.setAngle(0);
+        }
+        else {
+            arm.setAngle(0);
+            flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
         }
-         */
     }
 
     @Override
     public void initSendable(SendableBuilder builder){
-
+        SmartDashboard.putData("shooter/armTo0", setAngleCommand(0));
+        SmartDashboard.putData("shooter/armTo1", setAngleCommand(1));
+        SmartDashboard.putData("shooter/pid", arm.getController());
+        builder.addDoubleProperty("angle", arm::getMeasurement, null);
     }
 
 

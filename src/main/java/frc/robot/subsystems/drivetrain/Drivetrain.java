@@ -2,6 +2,8 @@ package frc.robot.subsystems.drivetrain;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -53,10 +55,10 @@ public class Drivetrain extends SubsystemBase {
     }
 
     private void setupDashboard(){
-        SmartDashboard.putData("drivetrain/backleft", m_backLeft);
+        SmartDashboard.putData("drivetrain/frontright", m_frontRight);
         SmartDashboard.putData("drivetrain/backright", m_backRight);
         SmartDashboard.putData("drivetrain/frontleft", m_frontLeft);
-        SmartDashboard.putData("drivetrain/frontright", m_frontRight);
+        SmartDashboard.putData("drivetrain/backleft", m_backLeft);
     }
 
     public Command driveToPosition( double x, double y, double pose ){
@@ -79,18 +81,21 @@ public class Drivetrain extends SubsystemBase {
         );
     }
 
-    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    public void drive( double x, double y, double rot){
+        
+        // ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d())
+        
         moduleStates = m_kinematics.toSwerveModuleStates(
-            ChassisSpeeds.discretize(
-                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d()) :
-                new ChassisSpeeds( xSpeed, ySpeed, rot ), 0.02
-            )
+            ChassisSpeeds.discretize( new ChassisSpeeds(x, y, rot), 0.02 )
         );
-        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Swerve.MAX_DRIVE_SPEED);
+        
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, frc.robot.Constants.Drivetrain.MAX_DRIVE_SPEED);
+
         m_frontLeft.setDesiredState(moduleStates[0]);
         m_frontRight.setDesiredState(moduleStates[1]);
         m_backLeft.setDesiredState(moduleStates[2]);
         m_backRight.setDesiredState(moduleStates[3]);
+
     }
 
 }

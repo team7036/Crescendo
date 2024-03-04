@@ -44,14 +44,46 @@ public interface Constants {
 
     public interface Drivetrain {
 
+        double MAX_DRIVE_SPEED = 3.0;
+        double MAX_ANGULAR_VELOCITY = 2 * Math.PI;
+        double MAX_ANGULAR_ACCELERATION = 2 * Math.PI;
+
         public interface Swerve {
-            double WHEEL_DIAMETER = 0.102;
-            double GEAR_RATIO = 6.75;
-            double MAX_DRIVE_SPEED = 3.0;
-            double MAX_ANGULAR_VELOCITY = 2 * Math.PI;
-            double MAX_ANGULAR_ACCELERATION = 2 * Math.PI;
-            double POSITION_CONVERSION_FACTOR = Math.PI * WHEEL_DIAMETER / GEAR_RATIO;
-            double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR / 60;
+
+            public interface Drive {
+
+                double GEAR_RATIO = 6.75;
+                double WHEEL_DIAMETER = 0.102;
+                double POSITION_CONVERSION = Math.PI * WHEEL_DIAMETER / GEAR_RATIO ; // Rotations to m
+                double VELOCITY_CONVERSION = POSITION_CONVERSION / 60; // RPM to m/s
+
+                public interface PID {
+                    double kP = 0.01;
+                    double kI = 20;
+                    double kD = 0.01;
+                }
+
+                public interface Feedforward {
+                    double kS = 1; // volts
+                    double kV = 2.6; // volts / velocity
+                }
+
+            }
+            public interface Turn {
+
+                double MAX_VELOCITY = 2 * Math.PI;
+                double MAX_ACCELERATION = 2 * Math.PI;
+
+                public interface PID {
+                    double kP = 1;
+                    double kI = 0;
+                    double kD = 0;
+                }
+                public interface Feedforward {
+                    double kS = 1;
+                    double kV = 0.5;
+                }
+            }
         }
 
         public interface Translation {
@@ -95,7 +127,9 @@ public interface Constants {
             MANUAL_AIMING,
             FIRING,
             READY_TO_FIRE,
-            IDLE
+            IDLE,
+            AMP_SCORE,
+            AMP_AIM
         }
 
         public interface Ports {
@@ -109,11 +143,19 @@ public interface Constants {
         public interface Arm {
             public interface PID {
                 double kP = 30;
-                double kI = 5;
-                double kD = 1;    
+                double kI = 10;
+                double kD = 2;    
             }
-            float MAX_ANGLE = (float) Math.toRadians(200);
+            public interface Feedforward {
+                double kS = 1;
+                double kG = 1;
+                double kV = 4.4;
+            }
+
+            
+            float MAX_ANGLE = 3.5f;
             float MIN_ANGLE = 0;
+            double SPEAKER_ANGLE = Math.PI;
             double MAX_VELOCITY = 2 * Math.PI;
             double MAX_ACCELERATION = 2 * Math.PI;
             double POSITION_CONVERSION = 0.0293;
@@ -125,7 +167,7 @@ public interface Constants {
             double SHOOTING_SPEED = 2500;
         }
 
-        double INTAKE_ANGLE = 0.2;
+        double INTAKE_ANGLE = 0;
         double INTAKE_SPEED = -100;
     }
 }
