@@ -40,6 +40,7 @@ public interface Constants {
 
     public interface Controllers {
         int DRIVER = 0;
+        int OPERATOR = 1;
     }
 
     public interface Drivetrain {
@@ -129,7 +130,9 @@ public interface Constants {
             READY_TO_FIRE,
             IDLE,
             AMP_SCORE,
-            AMP_AIM
+            AMP_AIM,
+            SPEAKER_AIM,
+            SPEAKER_SCORE
         }
 
         public interface Ports {
@@ -155,11 +158,12 @@ public interface Constants {
             
             float MAX_ANGLE = 3.5f;
             float MIN_ANGLE = 0;
-            double SPEAKER_ANGLE = Math.PI;
+            double AMP_ANGLE = Math.PI;
             double MAX_VELOCITY = 2 * Math.PI;
             double MAX_ACCELERATION = 2 * Math.PI;
             double POSITION_CONVERSION = 0.0293;
             double VELOCITY_CONVERSION = 0.0;
+            double SPEAKER_ANGLE = Math.PI / 2;
         }
 
         public interface FlyWheels {

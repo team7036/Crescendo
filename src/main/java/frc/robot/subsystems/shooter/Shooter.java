@@ -66,10 +66,18 @@ public class Shooter extends SubsystemBase {
                 stagingServo.setAngle(90);
             }
         } else if ( mode == Mode.AMP_AIM ){
-            arm.setAngle( Constants.Shooter.Arm.SPEAKER_ANGLE );
+            arm.setAngle( Constants.Shooter.Arm.AMP_ANGLE );
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
         } else if ( mode == Mode.AMP_SCORE ){
+            arm.setAngle(Constants.Shooter.Arm.AMP_ANGLE);
+            flyWheels.setSpeed(50);
+            stagingServo.setAngle(0);
+        } else if (mode == Mode.SPEAKER_AIM) {
+            arm.setAngle( Constants.Shooter.Arm.SPEAKER_ANGLE );
+            flyWheels.setSpeed(0);
+            stagingServo.setAngle(90);
+        } else if (mode == Mode.SPEAKER_SCORE) {
             arm.setAngle(Constants.Shooter.Arm.SPEAKER_ANGLE);
             flyWheels.setSpeed(200);
             stagingServo.setAngle(0);

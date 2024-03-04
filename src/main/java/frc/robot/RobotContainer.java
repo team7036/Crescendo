@@ -12,6 +12,7 @@ import frc.robot.subsystems.shooter.Shooter;
 public class RobotContainer {
 
     private final CommandXboxController driverController = new CommandXboxController(Constants.Controllers.DRIVER);
+    private final CommandXboxController operatorController = new CommandXboxController(Constants.Controllers.OPERATOR);
     private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
@@ -28,27 +29,12 @@ public class RobotContainer {
 
     }
 
-    public void testDrive(){
-
-        if ( driverController.a().getAsBoolean()) {
-            shooter.mode = Mode.MANUAL_AIMING;
-            if ( driverController.rightBumper().getAsBoolean() ){
-                shooter.mode = Mode.FIRING;
-            }
-        } else if( driverController.y().getAsBoolean() ){
-            shooter.mode = Mode.AMP_AIM;
-            if ( driverController.rightBumper().getAsBoolean() ){
-                shooter.mode = Mode.AMP_SCORE;
-            }
-
-        } else if ( driverController.leftBumper().getAsBoolean() ){
+    // Controls both Driver controller
+    public void teleopDrive(){
+        if ( driverController.a().getAsBoolean() ){
             shooter.mode = Mode.INTAKING;
             intake.run();
-        } else {
-            shooter.mode = Mode.IDLE;
-            intake.stop();
         }
-
         final var x =
             m_xspeedLimiter.calculate(MathUtil.applyDeadband(driverController.getLeftY(), 0.02))
                 * Constants.Drivetrain.MAX_DRIVE_SPEED;
@@ -62,7 +48,37 @@ public class RobotContainer {
                 * Constants.Drivetrain.MAX_DRIVE_SPEED;
 
         swerve.drive(x, y, rot);
-        
+    }
+
+    // controls the Operator controller
+    public void teleopOp() {
+        // A is preset amp angles
+        if (operatorController.a().getAsBoolean()) {
+            shooter.mode = Mode.AMP_AIM;
+        // B sets the velocity for the motors when aiming at the amp
+        } else if (operatorController.b().getAsBoolean()) {
+            shooter.mode = Mode.AMP_SCORE;
+        }
+    
+        // RT fires
+        else if ( operatorController.rightTrigger().getAsBoolean() ){
+            shooter.mode = Mode.FIRING;
+        } 
+        // X is the preset Speaker angle
+        else if( operatorController.x().getAsBoolean() ){
+            shooter.mode = Mode.SPEAKER_AIM;
+        // Y sets the velocity for the motors when aiming at the speaker
+        } else if ( operatorController.y().getAsBoolean() ){
+            shooter.mode = Mode.SPEAKER_SCORE;
+        } else {
+            shooter.mode = Mode.IDLE;
+            intake.stop();
+        }
+    }
+
+    public void testDrive(){
+        teleopDrive();
+        teleopOp();
     }
 
 }
