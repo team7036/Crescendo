@@ -3,10 +3,13 @@ package frc.robot.subsystems.shooter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.Shooter.Mode;
 
 public class Shooter extends SubsystemBase {
@@ -55,7 +58,7 @@ public class Shooter extends SubsystemBase {
             stagingServo.setAngle(180);
         // Manual Aiming is not used for now, but it will make the arm be controlled by the joysticks
         } else if ( mode == Mode.MANUAL_AIMING ) {
-            arm.setAngle(1.5); //TODO: Change to controlled by joystick
+            arm.setAngle(RobotContainer.operatorController.getLeftY() + 1); //TODO: Change to controlled by joystick
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
         // Speaker firing spins firing motors fast enough to launch the note to the speaker, and makes sure the angle aimed at the speaker

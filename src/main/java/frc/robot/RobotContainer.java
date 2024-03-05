@@ -12,7 +12,7 @@ import frc.robot.subsystems.shooter.Shooter;
 public class RobotContainer {
 
     private final CommandXboxController driverController = new CommandXboxController(Constants.Controllers.DRIVER);
-    private final CommandXboxController operatorController = new CommandXboxController(Constants.Controllers.OPERATOR);
+    public static final CommandXboxController operatorController = new CommandXboxController(Constants.Controllers.OPERATOR);
     private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
@@ -58,6 +58,10 @@ public class RobotContainer {
         // X sets the velocity for the motors when aiming at the amp
         } if (operatorController.x().getAsBoolean()) {
             shooter.mode = Mode.AMP_FIRING;
+        }
+
+        if(operatorController.getLeftY() != 0) {
+            shooter.mode = Mode.MANUAL_AIMING;
         }
 
         // B is the preset Speaker angle
