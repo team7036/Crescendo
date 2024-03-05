@@ -12,7 +12,7 @@ import frc.robot.subsystems.shooter.Shooter;
 public class RobotContainer {
 
     private final CommandXboxController driverController = new CommandXboxController(Constants.Controllers.DRIVER);
-    public static final CommandXboxController operatorController = new CommandXboxController(Constants.Controllers.OPERATOR);
+    private final CommandXboxController operatorController = new CommandXboxController(Constants.Controllers.OPERATOR);
     private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
@@ -31,10 +31,20 @@ public class RobotContainer {
 
     // Controls both Driver controller
     public void teleopDrive(){
+        
         if (driverController.a().getAsBoolean() ){
             shooter.mode = Mode.INTAKING;
             intake.run();
+        } else if(!driverController.a().getAsBoolean()){
+            shooter.mode = Mode.IDLE;
         }
+    
+        // if ( intake.seesNote() && !intake.isLoaded() ) {
+        //     shooter.mode = Mode.INTAKING;
+        //     intake.run();
+        // }
+
+
         final var x =
             m_xspeedLimiter.calculate(MathUtil.applyDeadband(driverController.getLeftY(), 0.02))
                 * Constants.Drivetrain.MAX_DRIVE_SPEED;
@@ -52,30 +62,34 @@ public class RobotContainer {
 
     // controls the Operator controller
     public void teleopOp() {
-        // A is preset amp angles
-        if (operatorController.a().getAsBoolean()) {
-            shooter.mode = Mode.AMP_AIM;
-        // X sets the velocity for the motors when aiming at the amp
-        } if (operatorController.x().getAsBoolean()) {
-            shooter.mode = Mode.AMP_FIRING;
-        }
-
-        if(operatorController.getLeftY() != 0) {
-            shooter.mode = Mode.MANUAL_AIMING;
-        }
-
-        // B is the preset Speaker angle
-        if(operatorController.b().getAsBoolean() ){
-            shooter.mode = Mode.SPEAKER_AIM;
-        // Y sets the velocity for the motors when aiming at the speaker
-        } if (operatorController.y().getAsBoolean() ){
-            shooter.mode = Mode.SPEAKER_FIRING;
-        } else {
+        // if no button is pressed, set the shooter mode to idle
+        if(!operatorController.a().getAsBoolean() &&
+        !operatorController.x().getAsBoolean() && 
+        !operatorController.b().getAsBoolean() && 
+        !operatorController.y().getAsBoolean() &&
+        operatorController.getLeftY() == 0 && 
+        !operatorController.rightTrigger().getAsBoolean()) {
+            // if nothing is pressed, the robot is idle
             shooter.mode = Mode.IDLE;
-            intake.stop();
-        }
-        // RT drops the note into the firing mechanism, shooting the note, but only if the shooter is already in a firing mode
-        if (operatorController.rightTrigger().getAsBoolean() && shooter.mode == Mode.AMP_FIRING || shooter.mode == Mode.SPEAKER_FIRING){
+        } else if (operatorController.y().getAsBoolean()) {
+            // y sets the shooting motor velocity for speaker 
+            shooter.mode = Mode.SPEAKER_FIRING;
+        } else if (operatorController.x().getAsBoolean()) {
+             // X sets the velocity for the motors when aiming at the amp
+            shooter.mode = Mode.AMP_FIRING;
+        } else if (operatorController.b().getAsBoolean()) {
+            // B sets the angle for the arm when aiming at the speaker
+            shooter.mode = Mode.SPEAKER_AIM;
+        } else if (operatorController.a().getAsBoolean()) {
+            // A sets the angle for the arm when aiming at the amp
+            shooter.mode = Mode.AMP_AIM;
+        } 
+        // Check (at the highest priority) if the trigger is pressed and the robot is ready to fire. Then drop the note into the firing mechanism
+        if (
+            operatorController.rightTrigger().getAsBoolean() && 
+            ( shooter.mode == Mode.AMP_FIRING || shooter.mode == Mode.SPEAKER_FIRING )
+        ) {
+            // RT releases the note into the motors given that they are running 
             shooter.mode = Mode.SCORE;
         }
     }

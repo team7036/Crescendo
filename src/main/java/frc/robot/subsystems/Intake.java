@@ -16,6 +16,10 @@ public class Intake extends SubsystemBase {
         sensor = new DigitalInput( Constants.Intake.Ports.SENSOR );
     }
 
+    public boolean seesNote(){
+        return true;
+    }
+
     public boolean isLoaded(){
         // Use a sensor to see if we have a Note currently on the robot
         return true;
