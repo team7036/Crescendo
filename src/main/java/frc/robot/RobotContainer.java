@@ -37,7 +37,7 @@ public class RobotContainer {
             intake.run();
         } else if(!driverController.a().getAsBoolean()){
             shooter.mode = Mode.IDLE;
-        }
+        } 
     
         // if ( intake.seesNote() && !intake.isLoaded() ) {
         //     shooter.mode = Mode.INTAKING;
@@ -97,6 +97,7 @@ public class RobotContainer {
     public void testDrive(){
         teleopDrive();
         teleopOp();
+        // change
     }
 
 }
