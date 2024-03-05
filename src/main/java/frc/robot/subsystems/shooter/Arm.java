@@ -16,7 +16,7 @@ import frc.robot.Constants;
 public class Arm extends ProfiledPIDSubsystem {
 
     private final CANSparkMax motor;
-    private final RelativeEncoder encoder;
+    public final RelativeEncoder encoder;
     private final ArmFeedforward feedforward;
     
     public Arm() {

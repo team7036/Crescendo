@@ -58,7 +58,7 @@ public class Shooter extends SubsystemBase {
             stagingServo.setAngle(180);
         // Manual Aiming is not used for now, but it will make the arm be controlled by the joysticks
         } else if ( mode == Mode.MANUAL_AIMING ) {
-            arm.setAngle(RobotContainer.operatorController.getLeftY() + 1); //TODO: Change to controlled by joystick
+            arm.setAngle(arm.encoder.getPosition() + (RobotContainer.operatorController.getLeftY() / 3)); //TODO: Change to controlled by joystick
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
         // Speaker firing spins firing motors fast enough to launch the note to the speaker, and makes sure the angle aimed at the speaker
