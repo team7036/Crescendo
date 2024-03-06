@@ -127,18 +127,14 @@ public interface Constants {
     public interface Shooter {
 
         public enum Mode {
-            READY_TO_INTAKE,
             INTAKING,
-            AUTO_AIMING,
             MANUAL_AIMING,
-            SCORE,
-            READY_TO_FIRE,
             IDLE,
             AMP_FIRING,
             AMP_AIM,
             SPEAKER_AIM,
+            SPEAKER_AIM_MANUAL,
             SPEAKER_FIRING,
-            AIMBOT,
             TEST_INTAKING,
             TEST_REV,
             TEST_FIRE,

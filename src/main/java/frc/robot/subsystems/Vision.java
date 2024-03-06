@@ -81,18 +81,19 @@ public class Vision {
     }
 
     public static double calculateArmAngle() {
-        // calculate the the bot's distance from the target's X value
-        double botXPosFromTarget = (Constants.fieldLength / 2) - (Math.abs(AprilTag.getBotPose()[0]));
-        System.out.print("XPOS from target: " + botXPosFromTarget);
-        // calculate the the bot's distance from the target's Y value
-        double botYPosFromTarget = (Constants.fieldWidth / 2) - (Math.abs(AprilTag.getBotPose()[1]));
-        System.out.print(", YPOS from target: " + botYPosFromTarget);
+        // // calculate the the bot's distance from the target's X value
+        // double botXPosFromTarget = (Constants.fieldLength / 2) - (Math.abs(AprilTag.getBotPose()[0]));
+        // System.out.print("XPOS from target: " + botXPosFromTarget);
+        // // calculate the the bot's distance from the target's Y value
+        // double botYPosFromTarget = (Constants.fieldWidth / 2) - (Math.abs(AprilTag.getBotPose()[1]));
+        // System.out.print(", YPOS from target: " + botYPosFromTarget);
 
-        // Find the hypotonuse of the triangle (x distance from target, y distance from target, total distance from target)
-        double botDistanceFromTarget =  Math.sqrt((Math.pow(botXPosFromTarget, 2)) + (Math.pow(botYPosFromTarget, 2)));
-        System.out.println("Distance from target: " + botDistanceFromTarget);
-        double armAngle = Math.atan((Constants.aprilTagDistanceFromGround / botDistanceFromTarget));
-        System.out.println("Arm angle: " + armAngle);
-        return armAngle;
+        // // Find the hypotonuse of the triangle (x distance from target, y distance from target, total distance from target)
+        // double botDistanceFromTarget =  Math.sqrt((Math.pow(botXPosFromTarget, 2)) + (Math.pow(botYPosFromTarget, 2)));
+        // System.out.println("Distance from target: " + botDistanceFromTarget);
+        // double armAngle = Math.atan((Constants.aprilTagDistanceFromGround / botDistanceFromTarget));
+        // System.out.println("Arm angle: " + armAngle);
+        // // return armAngle;
+        return Constants.Shooter.Arm.SPEAKER_ANGLE_SHORT;
     }
 }

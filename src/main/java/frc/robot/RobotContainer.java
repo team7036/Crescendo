@@ -32,7 +32,7 @@ public class RobotContainer {
     // Controls both Driver controller
     public void teleopDrive(){
         
-        if (driverController.getHID().getAButton() ){
+        if (driverController.getHID().getLeftBumper() ){
             shooter.mode = Mode.INTAKING;
             intake.run();
         } else {
@@ -72,30 +72,38 @@ public class RobotContainer {
         !driverController.getHID().getAButton()) {
             // if nothing is pressed, the robot is idle
             shooter.mode = Mode.IDLE;
-        } else if (operatorController.getHID().getYButton()) {
+        } else if (operatorController.getHID().getLeftBumper()) {
             // y sets the shooting motor velocity for speaker 
-            shooter.mode = Mode.SPEAKER_FIRING;
-        } else if (operatorController.getHID().getXButton()) {
-             // X sets the velocity for the motors when aiming at the amp
-            shooter.mode = Mode.AMP_FIRING;
-        } else if (operatorController.getHID().getBButton()) {
-            // B sets the angle for the arm when aiming at the speaker
             shooter.mode = Mode.SPEAKER_AIM;
         } else if (operatorController.getHID().getAButton()) {
-            // A sets the angle for the arm when aiming at the amp
+             // X sets the velocity for the motors when aiming at the amp
             shooter.mode = Mode.AMP_AIM;
-        } 
+        } else if (operatorController.getHID().getBButton()) {
+            // B sets the angle for the arm when aiming at the speaker
+            shooter.mode = Mode.SPEAKER_AIM_MANUAL;
+        }
         // Check (at the highest priority) if the trigger is pressed and the robot is ready to fire. Then drop the note into the firing mechanism
+        /*
         if (
             operatorController.getHID().getRightBumper() && 
             ( shooter.mode == Mode.AMP_FIRING || shooter.mode == Mode.SPEAKER_FIRING )
-        ) {
+            ) {
             // RT releases the note into the motors given that they are running 
             shooter.mode = Mode.SCORE;
         }
+        */
+        if ( operatorController.getHID().getRightBumper() ){
+            if ( shooter.mode == Mode.AMP_AIM){
+                shooter.mode = Mode.AMP_FIRING;
+            } else if ( shooter.mode == Mode.SPEAKER_AIM ){
+                shooter.mode = Mode.SPEAKER_FIRING;
+            } else {
+                shooter.mode = shooter.mode;
+            }
+        }
     }
 
-    public void testDrive(){
+    public void drive(){
         teleopOp();
         teleopDrive();
     }
@@ -108,8 +116,6 @@ public class RobotContainer {
             shooter.mode = Mode.TEST_REV;
         } else if (operatorController.getHID().getRightBumper()) {
             shooter.mode = Mode.TEST_FIRE;
-        } else if (operatorController.getHID().getLeftBumper()) {
-            shooter.mode = Mode.AIMBOT;
         } else {
             shooter.mode = Mode.TEST_IDLE;
         }
