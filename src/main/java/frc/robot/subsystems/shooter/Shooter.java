@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Shooter.Mode;
+import frc.robot.subsystems.Vision;
 
 public class Shooter extends SubsystemBase {
 
@@ -86,7 +87,11 @@ public class Shooter extends SubsystemBase {
             // arm.setAngle(0);
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
-        } else if ( mode == Mode.TEST_INTAKING ){
+        } else if (mode == Mode.AIMBOT) {
+            System.out.println( Vision.calculateArmAngle() );
+        } 
+        // test modes
+        else if ( mode == Mode.TEST_INTAKING ){
             arm.coast();
             flyWheels.setSpeed(-100);
             stagingServo.setAngle(180);

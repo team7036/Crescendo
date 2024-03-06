@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import java.lang.Math;
 
 import frc.robot.Constants;
 
@@ -77,5 +78,15 @@ public class Vision {
             table.getEntry("pipeline").setNumber(stream.ordinal());
         }
 
+    }
+
+    public static double calculateArmAngle() {
+        double botXPos = Math.abs(AprilTag.getBotPose()[0]);
+        double botYPos = Math.abs(AprilTag.getBotPose()[1]);
+        double botDistanceFromTarget =  Math.sqrt(Math.pow(botXPos, 2) + Math.pow(botYPos, 2));
+        double armAngle = Math.atan((Constants.aprilTagDistanceFromGround / botDistanceFromTarget));
+
+        System.out.println(armAngle);
+        return armAngle;
     }
 }

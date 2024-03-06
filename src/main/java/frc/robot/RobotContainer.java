@@ -108,6 +108,8 @@ public class RobotContainer {
             shooter.mode = Mode.TEST_REV;
         } else if (operatorController.getHID().getRightBumper()) {
             shooter.mode = Mode.TEST_FIRE;
+        } else if (operatorController.getHID().getLeftBumper()) {
+            shooter.mode = Mode.AIMBOT;
         } else {
             shooter.mode = Mode.TEST_IDLE;
         }

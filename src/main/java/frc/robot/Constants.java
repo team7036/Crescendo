@@ -4,6 +4,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 public interface Constants {
 
+    public double aprilTagLength = 0.1651; // in meters
+    public double aprilTagDistanceFromGround = 1.22 + (aprilTagLength / 2); // in meters, this is from the center of the target
+    public double fieldWidth = 8.21; // in meters, width is always the shorter side
+    public double fieldLength = 16.54; // in meters, length is always the longer side
+
     public enum RobotState {
         /*TODO */
     }
@@ -133,6 +138,7 @@ public interface Constants {
             AMP_AIM,
             SPEAKER_AIM,
             SPEAKER_FIRING,
+            AIMBOT,
             TEST_INTAKING,
             TEST_REV,
             TEST_FIRE,
