@@ -90,8 +90,6 @@ public class Shooter extends SubsystemBase {
             arm.setAngle( Vision.calculateArmAngle() );
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
-        } else if ( mode == Mode.SPEAKER_AIM_MANUAL) {
-            arm.setAngle( Constants.Shooter.Arm.SPEAKER_ANGLE_SHORT);
         } else if (mode == Mode.IDLE) {
             arm.setAngle(0);
             flyWheels.setSpeed(0);

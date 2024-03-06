@@ -63,16 +63,7 @@ public class RobotContainer {
     // controls the Operator controller
     public void teleopOp() {
         // if no button is pressed, set the shooter mode to idle
-        if(!operatorController.getHID().getAButton() &&
-        !operatorController.getHID().getXButton() && 
-        !operatorController.getHID().getBButton() && 
-        !operatorController.getHID().getYButton() &&
-        // operatorController.getLeftY() == 0 && 
-        !operatorController.getHID().getRightBumper() &&
-        !driverController.getHID().getAButton()) {
-            // if nothing is pressed, the robot is idle
-            shooter.mode = Mode.IDLE;
-        } else if (operatorController.getHID().getLeftBumper()) {
+        if (operatorController.getHID().getLeftBumper()) {
             // y sets the shooting motor velocity for speaker 
             shooter.mode = Mode.SPEAKER_AIM;
         } else if (operatorController.getHID().getAButton()) {
@@ -81,6 +72,8 @@ public class RobotContainer {
         } else if (operatorController.getHID().getBButton()) {
             // B sets the angle for the arm when aiming at the speaker
             shooter.mode = Mode.SPEAKER_AIM_MANUAL;
+        } else if (!driverController.getHID().getLeftBumper()) {
+            shooter.mode = Mode.IDLE;
         }
         // Check (at the highest priority) if the trigger is pressed and the robot is ready to fire. Then drop the note into the firing mechanism
         /*
@@ -92,6 +85,7 @@ public class RobotContainer {
             shooter.mode = Mode.SCORE;
         }
         */
+        System.out.println( shooter.mode );
         if ( operatorController.getHID().getRightBumper() ){
             if ( shooter.mode == Mode.AMP_AIM){
                 shooter.mode = Mode.AMP_FIRING;
