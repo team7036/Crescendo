@@ -81,12 +81,18 @@ public class Vision {
     }
 
     public static double calculateArmAngle() {
-        double botXPos = Math.abs(AprilTag.getBotPose()[0]);
-        double botYPos = Math.abs(AprilTag.getBotPose()[1]);
-        double botDistanceFromTarget =  Math.sqrt(Math.pow(botXPos, 2) + Math.pow(botYPos, 2));
-        double armAngle = Math.atan((Constants.aprilTagDistanceFromGround / botDistanceFromTarget));
+        // calculate the the bot's distance from the target's X value
+        double botXPosFromTarget = (Constants.fieldLength / 2) - (Math.abs(AprilTag.getBotPose()[0]));
+        System.out.print("XPOS from target: " + botXPosFromTarget);
+        // calculate the the bot's distance from the target's Y value
+        double botYPosFromTarget = (Constants.fieldWidth / 2) - (Math.abs(AprilTag.getBotPose()[1]));
+        System.out.print(", YPOS from target: " + botYPosFromTarget);
 
-        System.out.println(armAngle);
+        // Find the hypotonuse of the triangle (x distance from target, y distance from target, total distance from target)
+        double botDistanceFromTarget =  Math.sqrt((Math.pow(botXPosFromTarget, 2)) + (Math.pow(botYPosFromTarget, 2)));
+        System.out.println("Distance from target: " + botDistanceFromTarget);
+        double armAngle = Math.atan((Constants.aprilTagDistanceFromGround / botDistanceFromTarget));
+        System.out.println("Arm angle: " + armAngle);
         return armAngle;
     }
 }
