@@ -78,6 +78,7 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
     robotContainer.testDrive();
+    robotContainer.testShooter();
   }
   /* 
   private void driveWithJoystick(boolean fieldRelative){

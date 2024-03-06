@@ -76,9 +76,9 @@ public interface Constants {
                 double MAX_ACCELERATION = 2 * Math.PI;
 
                 public interface PID {
-                    double kP = 1;
-                    double kI = 0;
-                    double kD = 0;
+                    double kP = 9;
+                    double kI = 0.05;
+                    double kD = 0.03;
                 }
                 public interface Feedforward {
                     double kS = 1;
@@ -132,7 +132,11 @@ public interface Constants {
             AMP_FIRING,
             AMP_AIM,
             SPEAKER_AIM,
-            SPEAKER_FIRING
+            SPEAKER_FIRING,
+            TEST_INTAKING,
+            TEST_REV,
+            TEST_FIRE,
+            TEST_IDLE
         }
 
         public interface Ports {
@@ -163,7 +167,8 @@ public interface Constants {
             double MAX_ACCELERATION = 2 * Math.PI;
             double POSITION_CONVERSION = 0.0293;
             double VELOCITY_CONVERSION = 0.0;
-            double SPEAKER_ANGLE = Math.PI / 2;
+            double SPEAKER_ANGLE_SHORT = 1.538; // 1 Meter
+            double SPEAKER_ANGLE_LONG = 1.2801; // 3.3528 Meters
         }
 
         public interface FlyWheels {

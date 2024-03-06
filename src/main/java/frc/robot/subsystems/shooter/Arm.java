@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -34,6 +35,7 @@ public class Arm extends ProfiledPIDSubsystem {
         motor = new CANSparkMax(Constants.Shooter.Ports.ARM_MOTOR, MotorType.kBrushless);
         motor.setSoftLimit(SoftLimitDirection.kReverse, Constants.Shooter.Arm.MIN_ANGLE);
         motor.setSoftLimit(SoftLimitDirection.kForward, Constants.Shooter.Arm.MAX_ANGLE);
+        motor.setIdleMode(IdleMode.kBrake);
         // Configure Encoder
         encoder = motor.getEncoder();
         encoder.setPositionConversionFactor(Constants.Shooter.Arm.POSITION_CONVERSION);
@@ -49,6 +51,10 @@ public class Arm extends ProfiledPIDSubsystem {
         double output = m_controller.calculate(encoder.getPosition(), angle);
         double feed = feedforward.calculate(angle, 0);
         motor.setVoltage(output + feed);
+    }
+
+    public void coast(){
+        motor.setIdleMode(IdleMode.kCoast);
     }
 
 

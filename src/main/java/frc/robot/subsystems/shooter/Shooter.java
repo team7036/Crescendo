@@ -3,13 +3,9 @@ package frc.robot.subsystems.shooter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.Shooter.Mode;
 
 public class Shooter extends SubsystemBase {
@@ -34,6 +30,7 @@ public class Shooter extends SubsystemBase {
         sensor = new DigitalInput(Constants.Shooter.Ports.SENSOR);
     }
 
+    /*
     public Command setAngleCommand( double angle ){
         return this.runOnce(() -> {
             arm.setGoal(angle);
@@ -48,13 +45,14 @@ public class Shooter extends SubsystemBase {
     public Command idleCommand(){
         return this.runOnce( () -> flyWheels.idle() );
     }
-
+    */
     @Override
     public void periodic(){
+        
         // Intake mode intakes a note
         if ( mode == Mode.INTAKING ) {
             arm.setAngle(0);
-            flyWheels.setSpeed(-10);
+            flyWheels.setSpeed(-100);
             stagingServo.setAngle(180);
         // Manual Aiming is not used for now, but it will make the arm be controlled by the joysticks
         } else if ( mode == Mode.MANUAL_AIMING ) {
@@ -63,8 +61,10 @@ public class Shooter extends SubsystemBase {
             // stagingServo.setAngle(90);
         // Speaker firing spins firing motors fast enough to launch the note to the speaker, and makes sure the angle aimed at the speaker
         } else if ( mode == Mode.SPEAKER_FIRING ) {
-            arm.setAngle( Constants.Shooter.Arm.SPEAKER_ANGLE);
+            //arm.setAngle( Constants.Shooter.Arm.SPEAKER_ANGLE);
+            arm.coast();
             flyWheels.setSpeed(2500);
+            stagingServo.setAngle(90);
         // Amp aim aims the arm at the amp
         } else if ( mode == Mode.AMP_AIM ){
             arm.setAngle( Constants.Shooter.Arm.AMP_ANGLE);
@@ -74,25 +74,38 @@ public class Shooter extends SubsystemBase {
         } else if ( mode == Mode.AMP_FIRING ){
             arm.setAngle( Constants.Shooter.Arm.AMP_ANGLE);
             flyWheels.setSpeed(50);
+            stagingServo.setAngle(90);
         // speaker aim aims the arm at the speaker
         } else if (mode == Mode.SPEAKER_AIM) {
-            arm.setAngle( Constants.Shooter.Arm.SPEAKER_ANGLE);
+            // arm.setAngle( Constants.Shooter.Arm.SPEAKER_ANGLE);
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
         } else if (mode == Mode.SCORE) {
             stagingServo.setAngle(0);
-        }
-        else {
-            arm.setAngle(0);
+        } else if (mode == Mode.IDLE) {
+            // arm.setAngle(0);
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
+        } else if ( mode == Mode.TEST_INTAKING ){
+            arm.coast();
+            flyWheels.setSpeed(-100);
+            stagingServo.setAngle(180);
+        } else if ( mode == Mode.TEST_REV ){
+            arm.coast();
+            flyWheels.setSpeed(2500);
+            stagingServo.setAngle(90);
+        } else if ( mode == Mode.TEST_FIRE ){
+            arm.coast();
+            stagingServo.setAngle(0);
+        } else if ( mode == Mode.TEST_IDLE ){
+            arm.coast();
+            stagingServo.setAngle(90);
+            flyWheels.setSpeed(0);
         }
     }
 
     @Override
     public void initSendable(SendableBuilder builder){
-        SmartDashboard.putData("shooter/armTo0", setAngleCommand(0));
-        SmartDashboard.putData("shooter/armTo1", setAngleCommand(1));
         SmartDashboard.putData("shooter/pid", arm.getController());
         builder.addDoubleProperty("angle", arm::getMeasurement, null);
     }

@@ -55,10 +55,10 @@ public class Drivetrain extends SubsystemBase {
     }
 
     private void setupDashboard(){
-        SmartDashboard.putData("drivetrain/frontright", m_frontRight);
         SmartDashboard.putData("drivetrain/backright", m_backRight);
         SmartDashboard.putData("drivetrain/frontleft", m_frontLeft);
         SmartDashboard.putData("drivetrain/backleft", m_backLeft);
+        SmartDashboard.putData("drivetrain/frontright", m_frontRight);
     }
 
     public Command driveToPosition( double x, double y, double pose ){
