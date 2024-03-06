@@ -68,14 +68,14 @@ public class Shooter extends SubsystemBase {
             stagingServo.setAngle(90);
         // Amp aim aims the arm at the amp
         } else if ( mode == Mode.AMP_AIM ){
-            arm.setAngle( Constants.Shooter.Arm.AMP_ANGLE);
+            arm.setAngle( Constants.Shooter.Arm.AMP_ANGLE );
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
         // amp firing spins firing motors fast enough to launch the note to the amp, and makes sure the angle aimed at the amp
         } else if ( mode == Mode.AMP_FIRING ){
             arm.setAngle( Constants.Shooter.Arm.AMP_ANGLE);
             flyWheels.setSpeed(50);
-            stagingServo.setAngle(90);
+            stagingServo.setAngle(0);
         // speaker aim aims the arm at the speaker
         } else if (mode == Mode.SPEAKER_AIM) {
             // arm.setAngle( Constants.Shooter.Arm.SPEAKER_ANGLE);
@@ -84,7 +84,7 @@ public class Shooter extends SubsystemBase {
         } else if (mode == Mode.SCORE) {
             stagingServo.setAngle(0);
         } else if (mode == Mode.IDLE) {
-            // arm.setAngle(0);
+            arm.setAngle(0);
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
         } else if (mode == Mode.AIMBOT) {

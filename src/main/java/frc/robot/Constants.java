@@ -154,6 +154,7 @@ public interface Constants {
         }
 
         public interface Arm {
+
             public interface PID {
                 double kP = 30;
                 double kI = 10;
@@ -165,24 +166,22 @@ public interface Constants {
                 double kV = 4.4;
             }
 
-            
-            float MAX_ANGLE = 3.5f;
-            float MIN_ANGLE = 0;
             double AMP_ANGLE = Math.PI;
+            double INTAKE_ANGLE = 0;
+            float MAX_ANGLE = (float) AMP_ANGLE;
+            float MIN_ANGLE = (float) INTAKE_ANGLE;
             double MAX_VELOCITY = 2 * Math.PI;
             double MAX_ACCELERATION = 2 * Math.PI;
             double POSITION_CONVERSION = 0.0293;
             double VELOCITY_CONVERSION = 0.0;
             double SPEAKER_ANGLE_SHORT = 1.538; // 1 Meter
             double SPEAKER_ANGLE_LONG = 1.2801; // 3.3528 Meters
+            double INTAKE_SPEED = -100;
         }
 
         public interface FlyWheels {
             double SPEED_CONVERSION = 10/18;
             double SHOOTING_SPEED = 2500;
         }
-
-        double INTAKE_ANGLE = 0;
-        double INTAKE_SPEED = -100;
     }
 }

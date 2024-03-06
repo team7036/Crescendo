@@ -96,8 +96,8 @@ public class RobotContainer {
     }
 
     public void testDrive(){
-        //teleopOp();
-        //teleopDrive();
+        teleopOp();
+        teleopDrive();
     }
 
     public void testShooter(){
@@ -113,6 +113,7 @@ public class RobotContainer {
         } else {
             shooter.mode = Mode.TEST_IDLE;
         }
+
         // closest one: 1.538 -> 1 m
         // farthest one: 1.2801 -> 3.3528 m
     }
