@@ -120,7 +120,9 @@ public interface Constants {
 
         public interface Ports {
             int MOTOR = 40;
-            int SENSOR = 9;
+            int INTAKE_SENSOR_INPUT = 6;
+            int INTAKE_SENSOR_OUTPUT = 5;
+            int LOADED_SENSOR = 7;
         }
 
     }

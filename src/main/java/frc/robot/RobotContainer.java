@@ -31,13 +31,15 @@ public class RobotContainer {
 
     // Controls both Driver controller
     public void teleopDrive(){
-        double driveSpeed = Constants.Drivetrain.MAX_DRIVE_SPEED;
+        // handles manual intake
         if (driverController.getHID().getLeftBumper() ){
             shooter.mode = Mode.INTAKING;
             intake.run();
         } else {
             intake.stop();
         } 
+        // handles drive speed and slow mode
+        double driveSpeed = Constants.Drivetrain.MAX_DRIVE_SPEED;
         if ( driverController.getHID().getRightBumper() ) {
             driveSpeed = Constants.Drivetrain.SLOW_DRIVE_SPEED;
         } else {
@@ -84,7 +86,7 @@ public class RobotContainer {
         // }
         // Check (at the highest priority) if the trigger is pressed and the robot is ready to fire. Then drop the note into the firing mechanism
         System.out.println( shooter.mode );
-        if ( operatorController.getHID().getRightBumper() ){
+        if ( operatorController.getHID().getRightBumper() && Intake.isLoaded()){
             if ( shooter.mode == Mode.AMP_AIM){
                 shooter.mode = Mode.AMP_FIRING;
             } else if ( shooter.mode == Mode.SPEAKER_AIM ){
@@ -130,7 +132,7 @@ public class RobotContainer {
         // if(intake.seesNote()) {
         //     shooter.mode = Mode.INTAKING;
         // } else {
-        //     shooter.mode = Mode.IDLE;
+        //     shooter.mosde = Mode.IDLE;
         // }
     }
 }

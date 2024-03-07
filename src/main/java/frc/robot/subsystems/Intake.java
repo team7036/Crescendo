@@ -3,26 +3,34 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
 
     CANSparkMax motor;
-    DigitalInput sensor;
+    Ultrasonic intakeSensor;
+    static DigitalInput loadedSensor;
 
     public Intake(){
         motor = new CANSparkMax( Constants.Intake.Ports.MOTOR , MotorType.kBrushless);
-        sensor = new DigitalInput( Constants.Intake.Ports.SENSOR );
+        intakeSensor = new Ultrasonic( Constants.Intake.Ports.INTAKE_SENSOR_INPUT, Constants.Intake.Ports.INTAKE_SENSOR_INPUT);
+        loadedSensor = new DigitalInput( Constants.Intake.Ports.LOADED_SENSOR );
     }
 
     public boolean seesNote(){
-        return !sensor.get();
+        double intakeDistanceMM = intakeSensor.getRangeMM();
+        double actuatingDistance = 50;
+        if ( intakeDistanceMM < actuatingDistance) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public boolean isLoaded(){
-        // Use a sensor to see if we have a Note currently on the robot
-        return true;
+    public static boolean isLoaded(){
+        return !loadedSensor.get();
     }
 
     public void run() {
