@@ -85,8 +85,8 @@ public class RobotContainer {
         //     shooter.mode = Mode.INTAKING;
         // }
         // Check (at the highest priority) if the trigger is pressed and the robot is ready to fire. Then drop the note into the firing mechanism
-        System.out.println( shooter.mode );
-        if ( operatorController.getHID().getRightBumper() && Intake.isLoaded()){
+        System.out.println( "Shooter mode: " + shooter.mode + ", isLoaded: " + intake.isLoaded() );
+        if ( operatorController.getHID().getRightBumper() && intake.isLoaded()){
             if ( shooter.mode == Mode.AMP_AIM){
                 shooter.mode = Mode.AMP_FIRING;
             } else if ( shooter.mode == Mode.SPEAKER_AIM ){
@@ -128,7 +128,14 @@ public class RobotContainer {
     }
 
     public void testIntake(){
-        System.out.println(intake.seesNote());
+        System.out.println( "Shooter mode: " + shooter.mode + ", isLoaded: " + intake.isLoaded() );
+        if (driverController.getHID().getLeftBumper() && !intake.isLoaded()) {
+            shooter.mode = Mode.INTAKING;
+            intake.run();
+        } else {
+            shooter.mode = Mode.IDLE;
+            intake.stop();
+        }
         // if(intake.seesNote()) {
         //     shooter.mode = Mode.INTAKING;
         // } else {

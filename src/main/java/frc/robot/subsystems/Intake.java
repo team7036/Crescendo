@@ -9,13 +9,13 @@ import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
 
-    CANSparkMax motor;
-    Ultrasonic intakeSensor;
-    static DigitalInput loadedSensor;
+    private final CANSparkMax motor;
+    private final Ultrasonic intakeSensor;
+    private final DigitalInput loadedSensor;
 
     public Intake(){
         motor = new CANSparkMax( Constants.Intake.Ports.MOTOR , MotorType.kBrushless);
-        intakeSensor = new Ultrasonic( Constants.Intake.Ports.INTAKE_SENSOR_INPUT, Constants.Intake.Ports.INTAKE_SENSOR_INPUT);
+        intakeSensor = new Ultrasonic( Constants.Intake.Ports.INTAKE_SENSOR_INPUT, Constants.Intake.Ports.INTAKE_SENSOR_OUTPUT);
         loadedSensor = new DigitalInput( Constants.Intake.Ports.LOADED_SENSOR );
     }
 
@@ -29,16 +29,21 @@ public class Intake extends SubsystemBase {
         }
     }
 
-    public static boolean isLoaded(){
+    public boolean isLoaded(){
         return !loadedSensor.get();
     }
 
     public void run() {
         // pull in note
-        motor.set(-1);
+        if ( isLoaded() ){
+            motor.set(0);
+        } else {
+            motor.set(-1);
+        }
     }
 
     public void stop(){
+        // stop running
         motor.set(0);
     }
 
