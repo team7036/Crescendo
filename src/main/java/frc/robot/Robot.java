@@ -77,9 +77,9 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    //robotContainer.drive();
+    robotContainer.drive();
     //robotContainer.testShooter();
-    robotContainer.testIntake();
+    //robotContainer.testIntake();
   }
   /* 
   private void driveWithJoystick(boolean fieldRelative){

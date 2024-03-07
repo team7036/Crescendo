@@ -2,21 +2,41 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 import java.lang.Math;
+import java.util.Arrays;
+import java.util.List;
 
 import frc.robot.Constants;
+import frc.robot.Constants.Shooter.Arm;
 
 public class Vision {
 
     private static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
 
-    public static boolean hasValidTargets() { // Whether the limelight has any valid targets (0 or 1)
-        return table.getEntry("tv").getDouble(0) == 1;
+    public static boolean hasValidTargets(  ) {
+        Alliance alliance = DriverStation.getAlliance().get();
+        if ((table.getEntry("tv").getDouble(0) == 1) 
+            && ((( alliance == Alliance.Red ) && (getTagID() == 3 || getTagID() == 4))
+            || (( alliance == Alliance.Blue ) && (getTagID() == 7 || getTagID() == 8)))) 
+            {
+            System.out.println("VALID TARGET");
+            return true;
+        } else {
+            System.out.println("NO VALID TARGET");
+            return false;
+        }
     }
 
     public static double getHorizontalOffset(){ // Horizontal Offset From Crosshair To Target (LL1: -27 degrees to 27 degrees / LL2: -29.8 to 29.8 degrees)
         return table.getEntry("tx").getDouble(0.0);
+    }
+
+    public static double getTagID() {
+        return table.getEntry("tid").getDouble(0.0);
     }
 
     public static double getVerticalOffset(){ // Vertical Offset From Crosshair To Target (LL1: -20.5 degrees to 20.5 degrees / LL2: -24.85 to 24.85 degrees)
@@ -53,9 +73,9 @@ public class Vision {
             return table.getEntry("targetpose_"+pose.toString().toLowerCase()).getDoubleArray(new double[6]);
         }
 
-        public static double[] getID(){
+        public static int getID(){
             // why is the double array 6
-            return table.getEntry("tid").getDoubleArray(new double[6]);
+            return (int) table.getEntry("tid").getDoubleArray(new double[6])[0];
         }
 
     }
@@ -80,22 +100,15 @@ public class Vision {
 
     }
 
-    public static double calculateArmAngle() {
-        // // calculate the the bot's distance from the target's X value
-        if ( 0 == 1) {
+    public static double calculateArmAngle(  ) {
+        if ( !hasValidTargets() ) {// Check to see if Limelight has a target){ 
+            return Arm.SPEAKER_ANGLE_SHORT;
+        } else {
             double botXPosFromTarget = (Constants.fieldLength / 2) - (Math.abs(AprilTag.getBotPose()[0]));
-            System.out.println("XPOS from target: " + botXPosFromTarget);
-            // calculate the the bot's distance from the target's Y value
             double botYPosFromTarget = (Constants.fieldWidth / 2) - (Math.abs(AprilTag.getBotPose()[1]));
-            System.out.print(", YPOS from target: " + botYPosFromTarget);
-
-            // Find the hypotonuse of the triangle (x distance from target, y distance from target, total distance from target)
             double botDistanceFromTarget =  Math.sqrt((Math.pow(botXPosFromTarget, 2)) + (Math.pow(botYPosFromTarget, 2)));
-            System.out.println("Ground distance from target: " + botDistanceFromTarget);
             double armAngle = Math.atan((Constants.aprilTagDistanceFromGround / botDistanceFromTarget));
-            System.out.println("Arm angle: " + armAngle);
             return armAngle;
         }
-        return Constants.Shooter.Arm.SPEAKER_ANGLE_SHORT;
     }
 }

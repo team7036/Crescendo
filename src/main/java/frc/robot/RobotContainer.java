@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Shooter.Mode;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.shooter.FlyWheels;
 import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
@@ -32,7 +33,7 @@ public class RobotContainer {
     // Controls both Driver controller
     public void teleopDrive(){
         // handles manual intake
-        if (driverController.getHID().getLeftBumper() ){
+        if ( driverController.getHID().getLeftBumper() && !Intake.isLoaded()){
             shooter.mode = Mode.INTAKING;
             intake.run();
         } else {
@@ -85,8 +86,8 @@ public class RobotContainer {
         //     shooter.mode = Mode.INTAKING;
         // }
         // Check (at the highest priority) if the trigger is pressed and the robot is ready to fire. Then drop the note into the firing mechanism
-        System.out.println( "Shooter mode: " + shooter.mode + ", isLoaded: " + intake.isLoaded() );
-        if ( operatorController.getHID().getRightBumper() && intake.isLoaded()){
+        System.out.println( "Shooter mode: " + shooter.mode + ", isLoaded: " + Intake.isLoaded() );
+        if ( operatorController.getHID().getRightBumper() ){
             if ( shooter.mode == Mode.AMP_AIM){
                 shooter.mode = Mode.AMP_FIRING;
             } else if ( shooter.mode == Mode.SPEAKER_AIM ){
@@ -113,14 +114,10 @@ public class RobotContainer {
 
     public void testShooter(){
 
-        if (driverController.getHID().getAButton()) {
-            shooter.mode = Mode.TEST_INTAKING;
-        } else if (operatorController.getHID().getYButton()) {
-            shooter.mode = Mode.TEST_REV;
-        } else if (operatorController.getHID().getRightBumper()) {
+        if (operatorController.getHID().getLeftBumper()) {
             shooter.mode = Mode.TEST_FIRE;
         } else {
-            shooter.mode = Mode.TEST_IDLE;
+            shooter.mode = Mode.IDLE;
         }
 
         // closest one: 1.538 -> 1 m

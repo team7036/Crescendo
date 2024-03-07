@@ -11,7 +11,7 @@ public class Intake extends SubsystemBase {
 
     private final CANSparkMax motor;
     private final Ultrasonic intakeSensor;
-    private final DigitalInput loadedSensor;
+    private static DigitalInput loadedSensor;
 
     public Intake(){
         motor = new CANSparkMax( Constants.Intake.Ports.MOTOR , MotorType.kBrushless);
@@ -29,7 +29,7 @@ public class Intake extends SubsystemBase {
         }
     }
 
-    public boolean isLoaded(){
+    public static boolean isLoaded(){
         return !loadedSensor.get();
     }
 

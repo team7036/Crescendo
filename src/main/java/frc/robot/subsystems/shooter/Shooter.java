@@ -2,7 +2,9 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -85,13 +87,14 @@ public class Shooter extends SubsystemBase {
             } else {
                 stagingServo.setAngle(90);
             }
-        // speaker aim aims the arm at the speaker
         } else if (mode == Mode.SPEAKER_AIM) {
-            arm.setAngle( Vision.calculateArmAngle() );
+            //arm.setAngle( Vision.calculateArmAngle() );
+            System.out.println( Vision.calculateArmAngle() );
+            arm.setAngle(Constants.Shooter.Arm.SPEAKER_ANGLE_SHORT);
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
-        } else if (mode == Mode.IDLE) {
-            arm.setAngle(0);
+        } else if (mode == Mode.SPEAKER_AIM_MANUAL) {
+            arm.setAngle(Constants.Shooter.Arm.SPEAKER_ANGLE_SHORT);
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
         }
@@ -105,12 +108,17 @@ public class Shooter extends SubsystemBase {
             flyWheels.setSpeed(2500);
             stagingServo.setAngle(90);
         } else if ( mode == Mode.TEST_FIRE ){
-            arm.coast();
-            stagingServo.setAngle(0);
+            System.out.println(Vision.calculateArmAngle());
         } else if ( mode == Mode.TEST_IDLE ){
             arm.coast();
             stagingServo.setAngle(90);
             flyWheels.setSpeed(0);
+        } else {
+            System.out.println("IDLE MODE");
+            arm.setAngle(0);
+            stagingServo.setAngle(90);
+            flyWheels.setSpeed(0);
+        // speaker aim aims the arm at the speaker
         }
     }
 
