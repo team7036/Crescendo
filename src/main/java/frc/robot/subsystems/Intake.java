@@ -17,7 +17,7 @@ public class Intake extends SubsystemBase {
     }
 
     public boolean seesNote(){
-        return true;
+        return !sensor.get();
     }
 
     public boolean isLoaded(){

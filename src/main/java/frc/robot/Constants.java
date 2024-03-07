@@ -53,6 +53,7 @@ public interface Constants {
         double MAX_DRIVE_SPEED = 3.0;
         double MAX_ANGULAR_VELOCITY = 2 * Math.PI;
         double MAX_ANGULAR_ACCELERATION = 2 * Math.PI;
+        double SLOW_DRIVE_SPEED = MAX_DRIVE_SPEED / 2;
 
         public interface Swerve {
 
@@ -119,7 +120,7 @@ public interface Constants {
 
         public interface Ports {
             int MOTOR = 40;
-            int SENSOR = 3;
+            int SENSOR = 9;
         }
 
     }
