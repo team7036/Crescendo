@@ -55,6 +55,7 @@ public class Arm extends ProfiledPIDSubsystem {
 
     public void coast(){
         motor.setIdleMode(IdleMode.kCoast);
+        disable();
     }
 
 

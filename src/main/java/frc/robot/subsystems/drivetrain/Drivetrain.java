@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Drivetrain.*;
+import frc.robot.subsystems.Vision;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -96,6 +97,10 @@ public class Drivetrain extends SubsystemBase {
         m_backLeft.setDesiredState(moduleStates[2]);
         m_backRight.setDesiredState(moduleStates[3]);
 
+    }
+
+    public void rotateToSpeaker() {
+        //double currentYaw = Vision.botpose[5];
     }
 
 }

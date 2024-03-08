@@ -5,8 +5,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 public interface Constants {
 
     public interface Field {
+        public double distanceFromBottomTargetToSpeaker = 0.94;
         public double aprilTagLength = 0.1651; // in meters
         public double aprilTagDistanceFromGround = 1.22 + (aprilTagLength / 2); // in meters, this is from the center of the target
+        public double speakerDistanceFromGround = 1.22 + distanceFromBottomTargetToSpeaker;
         public double fieldWidth = 8.21; // in meters, width is always the shorter side
         public double fieldLength = 16.54; // in meters, length is always the longer side
     }
@@ -143,7 +145,7 @@ public interface Constants {
             TEST_INTAKING,
             TEST_REV,
             TEST_FIRE,
-            TEST_IDLE
+            TEST_IDLE,
         }
 
         public interface Ports {
@@ -157,8 +159,8 @@ public interface Constants {
         public interface Arm {
 
             public interface PID {
-                double kP = 30;
-                double kI = 10;
+                double kP = 20;
+                double kI = 5;
                 double kD = 2;    
             }
             public interface Feedforward {
@@ -167,6 +169,7 @@ public interface Constants {
                 double kV = 4.4;
             }
 
+            double ANGLE_OFFSET = 0.8221260732;
             double AMP_ANGLE = Math.PI;
             double INTAKE_ANGLE = 0;
             float MAX_ANGLE = (float) AMP_ANGLE;
@@ -175,7 +178,7 @@ public interface Constants {
             double MAX_ACCELERATION = 2 * Math.PI;
             double POSITION_CONVERSION = 0.0293;
             double VELOCITY_CONVERSION = 0.0;
-            double SPEAKER_ANGLE_SHORT = 1.538; // 1 Meter
+            double SPEAKER_ANGLE_SHORT = 1.6959; // 1 Meter
             double SPEAKER_ANGLE_LONG = 1.2801; // 3.3528 Meters
             double INTAKE_SPEED = -100;
         }

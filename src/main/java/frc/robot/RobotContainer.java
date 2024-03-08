@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Shooter.Mode;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.shooter.FlyWheels;
 import frc.robot.subsystems.shooter.Shooter;
@@ -30,46 +31,9 @@ public class RobotContainer {
 
     }
 
-    // Controls both Driver controller
-    public void teleopDrive(){
-        // handles manual intake
-        if ( driverController.getHID().getLeftBumper() && !intake.isLoaded()){
-            shooter.mode = Mode.INTAKING;
-            intake.run();
-        } else {
-            intake.stop();
-        } 
-        // handles drive speed and slow mode
-        double driveSpeed = Constants.Drivetrain.MAX_DRIVE_SPEED;
-        if ( driverController.getHID().getRightBumper() ) {
-            driveSpeed = Constants.Drivetrain.SLOW_DRIVE_SPEED;
-        } else {
-            driveSpeed = Constants.Drivetrain.MAX_DRIVE_SPEED;
-        }
-    
-        // if ( intake.seesNote() && !intake.isLoaded() ) {
-        //     shooter.mode = Mode.INTAKING;
-        //     intake.run();
-        // }
-
-
-        final var x =
-            m_xspeedLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getLeftY(), 0.02))
-                * driveSpeed;
-
-        final var y =
-            -m_yspeedLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getLeftX(), 0.02))
-                * driveSpeed;
-
-        final var rot =
-            -m_rotLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getRightX(), 0.02))
-                * driveSpeed;
-
-        swerve.drive(x, y, rot);
-    }
 
     // controls the Operator controller
-    public void teleopOp() {
+    public void operate() {
         if (operatorController.getHID().getLeftBumper()) {
             // y sets the shooting motor velocity for speaker 
             shooter.mode = Mode.SPEAKER_AIM;
@@ -108,18 +72,45 @@ public class RobotContainer {
     }
 
     public void drive(){
-        teleopOp();
-        // teleopDrive();
+        // handles manual intake
+        if ( driverController.getHID().getLeftBumper() && !intake.isLoaded()){
+            shooter.mode = Mode.INTAKING;
+            intake.run();
+        } else {
+            intake.stop();
+        } 
+        // handles drive speed and slow mode
+        double driveSpeed = Constants.Drivetrain.MAX_DRIVE_SPEED;
+        if ( driverController.getHID().getRightBumper() ) {
+            driveSpeed = Constants.Drivetrain.SLOW_DRIVE_SPEED;
+        } else {
+            driveSpeed = Constants.Drivetrain.MAX_DRIVE_SPEED;
+        }
+    
+        // if ( intake.seesNote() && !intake.isLoaded() ) {
+        //     shooter.mode = Mode.INTAKING;
+        //     intake.run();
+        // }
+
+
+        final var x =
+            m_xspeedLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getLeftY(), 0.02))
+                * driveSpeed;
+
+        final var y =
+            -m_yspeedLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getLeftX(), 0.02))
+                * driveSpeed;
+
+        final var rot =
+            -m_rotLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getRightX(), 0.02))
+                * driveSpeed;
+
+        swerve.drive(x, y, rot);
     }
 
     public void testShooter(){
-
-        if (operatorController.getHID().getLeftBumper()) {
-            shooter.mode = Mode.TEST_FIRE;
-        } else {
-            shooter.mode = Mode.IDLE;
-        }
-
+        shooter.mode = Mode.TEST_IDLE;
+        System.out.println("Desired Angle: " + Vision.calculateArmAngle());
         // closest one: 1.538 -> 1 m
         // farthest one: 1.2801 -> 3.3528 m
     }

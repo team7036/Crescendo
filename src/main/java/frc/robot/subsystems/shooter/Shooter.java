@@ -64,7 +64,7 @@ public class Shooter extends SubsystemBase {
             // stagingServo.setAngle(90);
         // Speaker firing spins firing motors fast enough to launch the note to the speaker, and makes sure the angle aimed at the speaker
         } else if ( mode == Mode.SPEAKER_FIRING ) {
-            arm.setAngle( Vision.calculateArmAngle());
+            arm.setAngle( Vision.calculateArmAngle() );
             flyWheels.setSpeed(2500);
             if ( flyWheels.atSpeed(2500) ){
                 stagingServo.setAngle(0);
@@ -88,31 +88,21 @@ public class Shooter extends SubsystemBase {
                 stagingServo.setAngle(90);
             }
         } else if (mode == Mode.SPEAKER_AIM) {
-            //arm.setAngle( Vision.calculateArmAngle() );
-            System.out.println( Vision.calculateArmAngle() );
-            arm.coast();
+            arm.setAngle( Vision.calculateArmAngle() );
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
         } else if (mode == Mode.SPEAKER_AIM_MANUAL) {
             arm.setAngle(Constants.Shooter.Arm.SPEAKER_ANGLE_SHORT);
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
+        } else if ( mode == Mode.TEST_IDLE ){
+            arm.coast();
         }
         // test modes
         else if ( mode == Mode.TEST_INTAKING ){
             arm.coast();
             flyWheels.setSpeed(-100);
             stagingServo.setAngle(180);
-        } else if ( mode == Mode.TEST_REV ){
-            arm.coast();
-            flyWheels.setSpeed(2500);
-            stagingServo.setAngle(90);
-        } else if ( mode == Mode.TEST_FIRE ){
-            System.out.println(Vision.calculateArmAngle());
-        } else if ( mode == Mode.TEST_IDLE ){
-            arm.coast();
-            stagingServo.setAngle(90);
-            flyWheels.setSpeed(0);
         } else {
             arm.setAngle(0);
             stagingServo.setAngle(90);
