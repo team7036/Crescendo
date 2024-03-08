@@ -33,7 +33,7 @@ public class RobotContainer {
     // Controls both Driver controller
     public void teleopDrive(){
         // handles manual intake
-        if ( driverController.getHID().getLeftBumper() && !Intake.isLoaded()){
+        if ( driverController.getHID().getLeftBumper() && !intake.isLoaded()){
             shooter.mode = Mode.INTAKING;
             intake.run();
         } else {
@@ -86,7 +86,7 @@ public class RobotContainer {
         //     shooter.mode = Mode.INTAKING;
         // }
         // Check (at the highest priority) if the trigger is pressed and the robot is ready to fire. Then drop the note into the firing mechanism
-        System.out.println( "Shooter mode: " + shooter.mode + ", isLoaded: " + Intake.isLoaded() );
+        System.out.println( "Shooter mode: " + shooter.mode + ", isLoaded: " + intake.isLoaded() );
         if ( operatorController.getHID().getRightBumper() ){
             if ( shooter.mode == Mode.AMP_AIM){
                 shooter.mode = Mode.AMP_FIRING;

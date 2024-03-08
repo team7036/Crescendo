@@ -29,7 +29,7 @@ public class Intake extends SubsystemBase {
         }
     }
 
-    public static boolean isLoaded(){
+    public boolean isLoaded(){
         return !loadedSensor.get();
     }
 
