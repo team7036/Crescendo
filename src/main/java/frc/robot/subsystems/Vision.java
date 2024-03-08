@@ -104,11 +104,18 @@ public class Vision {
         if ( !hasValidTargets() ) {// Check to see if Limelight has a target){ 
             return Arm.SPEAKER_ANGLE_SHORT;
         } else {
-            double botXPosFromTarget = (Constants.fieldLength / 2) - (Math.abs(AprilTag.getBotPose()[0]));
-            double botYPosFromTarget = (Constants.fieldWidth / 2) - (Math.abs(AprilTag.getBotPose()[1]));
+            System.out.println("BotPosX: " + AprilTag.getBotPose()[0]);
+            System.out.println("BotPosY: " + AprilTag.getBotPose()[1]);
+            double botXPosFromTarget = (Constants.Field.fieldLength / 2) - (Math.abs(AprilTag.getBotPose()[0]));
+            System.out.println("xPosFromTarget: " + botXPosFromTarget);
+            double botYPosFromTarget = Math.abs(AprilTag.getBotPose()[1]);
+            System.out.println("yPosFromTarget: " + botYPosFromTarget);
             double botDistanceFromTarget =  Math.sqrt((Math.pow(botXPosFromTarget, 2)) + (Math.pow(botYPosFromTarget, 2)));
-            double armAngle = Math.atan((Constants.aprilTagDistanceFromGround / botDistanceFromTarget));
-            return armAngle;
+            System.out.println("distanceFromTarget: " + botDistanceFromTarget);
+            double armAngle = Math.atan((Constants.Field.aprilTagDistanceFromGround / botDistanceFromTarget));
+            System.out.println("Arm Angle: " + armAngle);
+            // return armAngle;
+            return 1;
         }
     }
 }

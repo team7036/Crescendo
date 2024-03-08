@@ -90,7 +90,7 @@ public class Shooter extends SubsystemBase {
         } else if (mode == Mode.SPEAKER_AIM) {
             //arm.setAngle( Vision.calculateArmAngle() );
             System.out.println( Vision.calculateArmAngle() );
-            arm.setAngle(Constants.Shooter.Arm.SPEAKER_ANGLE_SHORT);
+            arm.coast();
             flyWheels.setSpeed(0);
             stagingServo.setAngle(90);
         } else if (mode == Mode.SPEAKER_AIM_MANUAL) {
@@ -114,7 +114,6 @@ public class Shooter extends SubsystemBase {
             stagingServo.setAngle(90);
             flyWheels.setSpeed(0);
         } else {
-            System.out.println("IDLE MODE");
             arm.setAngle(0);
             stagingServo.setAngle(90);
             flyWheels.setSpeed(0);
