@@ -7,6 +7,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,7 +27,12 @@ public class Drivetrain extends SubsystemBase {
     private SwerveModuleState[] moduleStates;
 
     // Setup NavX Gyro
-    private static AHRS gyro = new AHRS(SPI.Port.kMXP);
+    /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
+    /* Alternatively:  I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB     */
+    /* See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details. */
+    private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
+
+    // private static AHRS gyro = new AHRS(SPI.Port.kMXP);
 
     // Establish Kinematics (the shape of the drivetrain)
     private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
@@ -39,7 +45,7 @@ public class Drivetrain extends SubsystemBase {
     // Establish Odometry (the position of each wheel)
     private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
         m_kinematics,
-        gyro.getRotation2d(),
+        ahrs.getRotation2d(),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -49,7 +55,7 @@ public class Drivetrain extends SubsystemBase {
     );
 
     public Drivetrain() {
-        gyro.zeroYaw();
+        ahrs.zeroYaw();
         setupDashboard();
     }
 
@@ -70,7 +76,7 @@ public class Drivetrain extends SubsystemBase {
     public void periodic(){
         // Update Drivetrain Odometry
         m_odometry.update(
-            gyro.getRotation2d(),
+            ahrs.getRotation2d(),
             new SwerveModulePosition[] {
                 m_frontLeft.getPosition(),
                 m_frontRight.getPosition(),
