@@ -9,9 +9,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.lang.Math;
 
 import frc.robot.Constants;
-import frc.robot.Constants.Shooter.Arm;
 
 public class Vision extends SubsystemBase {
+
+    static double[] lastBotPose = new double[6];
 
     static double speakerZOffset = Constants.Vision.SPEAKER_Z_OFFSET;
     static double speakerXOffset = Constants.Vision.SPEAKER_X_OFFSET;
@@ -120,31 +121,39 @@ public class Vision extends SubsystemBase {
     }
 
     public static double calculateArmAngle( ) {
-        if ( !hasValidTargets() ) {// Check to see if Limelight has a target){ 
-            //System.out.println("ANGLE IS DEFAULT");
-            return Arm.SPEAKER_ANGLE_SHORT;
-        } else {
-            /*
 
-            AprilTag.getBotPose() returns the distance from the center of the field
-            ____________________________________________
-            |                                           |
-            |                   y                       |
-            |                   |                       |
-            |{}                 |____ x              {} |
-            |                                           |
-            |                                           |
-            |                                           |
-            |___________________________________________|
+        if ( hasValidTargets() ) {// Check to see if Limelight has a target){
+            // update the bot's position
+            lastBotPose = AprilTag.getBotPose();
+        }
 
-             */
-            double xDistance = (Constants.Field.fieldLength / 2) - (Math.abs(AprilTag.getBotPose()[0]));
-            double yDistance = Math.abs(AprilTag.getBotPose()[1]);
+        // make sure that lastBotPose has valid numbers
+        if ( lastBotPose[0] != 0 ) {
+            double xDistance = (Constants.Field.fieldLength / 2) - (Math.abs(lastBotPose[0]));
+            double yDistance = Math.abs(lastBotPose[1]);
             double distanceFromSpeaker =  Math.sqrt((Math.pow(xDistance, 2)) + (Math.pow(yDistance, 2)));
             double armAngle = Math.atan((Constants.Field.aprilTagDistanceFromGround + speakerZOffset) / (distanceFromSpeaker - speakerXOffset));
             armAngle += Constants.Shooter.Arm.ANGLE_OFFSET;
-            return armAngle;
+            return armAngle; 
+        } else {
+            // returns a default angle if theres not valid numbers
+            return Constants.Shooter.Arm.SPEAKER_ANGLE_SHORT;
         }
+        
+        /*
+
+        AprilTag.getBotPose() returns the distance from the center of the field
+        ____________________________________________
+        |                                           |
+        |                   y                       |
+        |                   |                       |
+        |{}                 |____ x              {} |
+        |                                           |
+        |                                           |
+        |                                           |
+        |___________________________________________|
+
+            */      
     }
 
 }

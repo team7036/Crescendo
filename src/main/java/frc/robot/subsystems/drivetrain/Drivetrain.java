@@ -1,21 +1,23 @@
 package frc.robot.subsystems.drivetrain;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Drivetrain.*;
 
+
 public class Drivetrain extends SubsystemBase {
+
+    double targetHeading;
 
     // Create Swerve Module Objects
     private final SwerveModule m_frontLeft = new SwerveModule(Ports.FL_TURN, Ports.FL_DRIVE, Ports.FL_ENCODER);
@@ -27,12 +29,7 @@ public class Drivetrain extends SubsystemBase {
     private SwerveModuleState[] moduleStates;
 
     // Setup NavX Gyro
-    /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
-    /* Alternatively:  I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB     */
-    /* See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details. */
-    private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
-
-    // private static AHRS gyro = new AHRS(SPI.Port.kMXP);
+    private static AHRS gyro = new AHRS(SPI.Port.kMXP);
 
     // Establish Kinematics (the shape of the drivetrain)
     private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
@@ -42,10 +39,12 @@ public class Drivetrain extends SubsystemBase {
         Translation.BACK_RIGHT
     );
 
+    private final PIDController turnController = new PIDController(1, 0, 0);
+
     // Establish Odometry (the position of each wheel)
     private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
         m_kinematics,
-        ahrs.getRotation2d(),
+        gyro.getRotation2d(),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -55,7 +54,9 @@ public class Drivetrain extends SubsystemBase {
     );
 
     public Drivetrain() {
-        ahrs.zeroYaw();
+        gyro.zeroYaw();
+        gyro.setAngleAdjustment(Math.PI / 180);
+        turnController.enableContinuousInput(0, 2 * Math.PI);
         setupDashboard();
     }
 
@@ -66,17 +67,22 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putData("drivetrain/frontright", m_frontRight);
     }
 
-    public Command driveToPosition( double x, double y, double pose ){
-        return run(()->{
+    public double getHeading(){
+        return targetHeading;
+    }
 
-        });
+    public void setHeading( double heading ) {
+        turnController.setSetpoint(heading);
+        double rotVel = turnController.calculate( gyro.getYaw(), heading);
+        //drive(0, 0, rotVel);
+        targetHeading = heading;
     }
 
     @Override
     public void periodic(){
         // Update Drivetrain Odometry
         m_odometry.update(
-            ahrs.getRotation2d(),
+            gyro.getRotation2d(),
             new SwerveModulePosition[] {
                 m_frontLeft.getPosition(),
                 m_frontRight.getPosition(),
@@ -103,12 +109,10 @@ public class Drivetrain extends SubsystemBase {
 
     }
 
-    public void rotateToSpeaker() {
-        //double currentYaw = Vision.botpose[5];
-    }
-
     @Override
     public void initSendable( SendableBuilder builder){
+        builder.addDoubleProperty("target heading", this::getHeading, (heading)->setHeading(heading));
+        builder.addDoubleProperty("current heading", gyro::getYaw, null);
     }
 
 }

@@ -7,8 +7,8 @@ public interface Constants {
     public interface Field {
         public double distanceFromBottomTargetToSpeaker = 0.92;
         public double aprilTagLength = 0.1651; // in meters
-        public double aprilTagDistanceFromGround = 1.22 + (aprilTagLength / 2); // in meters, this is from the center of the target
-        public double speakerDistanceFromGround = 1.22 + distanceFromBottomTargetToSpeaker;
+        public double aprilTagDistanceFromGround = 1.368552 + (aprilTagLength / 2); // in meters, this is from the center of the target
+        public double speakerDistanceFromGround = 1.368552 + distanceFromBottomTargetToSpeaker;
         public double speakerXOffsetFromAprilTag = 0.13;
         public double fieldWidth = 8.21; // in meters, width is always the shorter side
         public double fieldLength = 16.54; // in meters, length is always the longer side
@@ -20,8 +20,10 @@ public interface Constants {
 
     public interface Vision {
 
-        double SPEAKER_Z_OFFSET = 4.45;
-        double SPEAKER_X_OFFSET = 0.1;
+
+        //4.45, 0.1 
+        double SPEAKER_Z_OFFSET = 3.55;
+        double SPEAKER_X_OFFSET = 0.11;
     
         public enum LedMode {
             PIPELINE, OFF, BLINK, ON
@@ -139,7 +141,8 @@ public interface Constants {
 
     public interface Climber {
         public interface Ports {
-            int MOTOR = 6;
+            int MOTOR_LIFT = 6;
+            int MOTOR_LOWER = 7;
         }
 
         public enum Mode {
@@ -183,9 +186,9 @@ public interface Constants {
         public interface Arm {
 
             public interface PID {
-                double kP = 20;
-                double kI = 5;
-                double kD = 2;    
+                double kP = 15;
+                double kI = 10;
+                double kD = 1;    
             }
             public interface Feedforward {
                 double kS = 1;
