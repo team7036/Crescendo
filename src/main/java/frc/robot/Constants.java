@@ -5,10 +5,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 public interface Constants {
 
     public interface Field {
-        public double distanceFromBottomTargetToSpeaker = 0.94;
+        public double distanceFromBottomTargetToSpeaker = 0.92;
         public double aprilTagLength = 0.1651; // in meters
         public double aprilTagDistanceFromGround = 1.22 + (aprilTagLength / 2); // in meters, this is from the center of the target
         public double speakerDistanceFromGround = 1.22 + distanceFromBottomTargetToSpeaker;
+        public double speakerXOffsetFromAprilTag = 0.13;
         public double fieldWidth = 8.21; // in meters, width is always the shorter side
         public double fieldLength = 16.54; // in meters, length is always the longer side
     }
@@ -18,6 +19,9 @@ public interface Constants {
     }
 
     public interface Vision {
+
+        double SPEAKER_Z_OFFSET = 4.45;
+        double SPEAKER_X_OFFSET = 0.1;
     
         public enum LedMode {
             PIPELINE, OFF, BLINK, ON
@@ -57,7 +61,7 @@ public interface Constants {
         double MAX_DRIVE_SPEED = 3.0;
         double MAX_ANGULAR_VELOCITY = 2 * Math.PI;
         double MAX_ANGULAR_ACCELERATION = 2 * Math.PI;
-        double SLOW_DRIVE_SPEED = MAX_DRIVE_SPEED / 2;
+        double SLOW_DRIVE_SPEED = 0.5;
 
         public interface Swerve {
 
@@ -129,6 +133,26 @@ public interface Constants {
             int LOADED_SENSOR = 7;
         }
 
+        double INTAKE_SPEED = -1;
+
+    }
+
+    public interface Climber {
+        public interface Ports {
+            int MOTOR = 6;
+        }
+
+        public enum Mode {
+            CLIMBER_DOWN,
+            CLIMBER_UP,
+            COAST
+        }
+
+        float MIN_CLIMBER_HEIGHT = 0;
+        float MAX_CLIMBER_HEIGHT = 5;
+
+        double POSITION_CONVERSION = 0.0293;
+        double VELOCITY_CONVERSION = 0.0;
     }
 
     public interface Shooter {
@@ -168,24 +192,24 @@ public interface Constants {
                 double kG = 1;
                 double kV = 4.4;
             }
-
-            double ANGLE_OFFSET = 0.8221260732;
+            
+            double ANGLE_OFFSET = 0.547042;
             double AMP_ANGLE = Math.PI;
-            double INTAKE_ANGLE = 0;
+            double INTAKE_ANGLE = 0.1;
             float MAX_ANGLE = (float) AMP_ANGLE;
             float MIN_ANGLE = (float) INTAKE_ANGLE;
             double MAX_VELOCITY = 2 * Math.PI;
             double MAX_ACCELERATION = 2 * Math.PI;
             double POSITION_CONVERSION = 0.0293;
             double VELOCITY_CONVERSION = 0.0;
-            double SPEAKER_ANGLE_SHORT = 1.6959; // 1 Meter
-            double SPEAKER_ANGLE_LONG = 1.2801; // 3.3528 Meters
-            double INTAKE_SPEED = -100;
+            double SPEAKER_ANGLE_SHORT = 1.7959; // 1 Meter
         }
 
         public interface FlyWheels {
             double SPEED_CONVERSION = 10/18;
-            double SHOOTING_SPEED = 2500;
+            double SPEAKER_SPEED = 2500;
+            double AMP_SPEED = 50;
+            double INTAKE_SPEED = -10;
         }
     }
 }

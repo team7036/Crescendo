@@ -38,6 +38,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
   }
 
   /**
@@ -79,10 +80,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-   // robotContainer.drive();
+    robotContainer.drive();
     robotContainer.operate();
-    //robotContainer.testShooter();
-    //robotContainer.testIntake();
   }
   /* 
   private void driveWithJoystick(boolean fieldRelative){

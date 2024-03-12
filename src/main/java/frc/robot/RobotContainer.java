@@ -5,6 +5,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Shooter.Mode;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -21,10 +22,12 @@ public class RobotContainer {
     private final Drivetrain swerve = new Drivetrain();
     private final Shooter shooter = new Shooter();
     private final Intake intake = new Intake();
+    private final Climber climber = new Climber();
 
     public RobotContainer(){
-        //SmartDashboard.putData("drivetrain", swerve);
+        SmartDashboard.putData("drivetrain", swerve);
         SmartDashboard.putData("shooter", shooter);
+        SmartDashboard.putData("intake", intake);
     }
 
     public void testArmPID(){
@@ -34,100 +37,62 @@ public class RobotContainer {
 
     // controls the Operator controller
     public void operate() {
-        if (operatorController.getHID().getLeftBumper()) {
-            // y sets the shooting motor velocity for speaker 
-            shooter.mode = Mode.SPEAKER_AIM;
-        } else if (operatorController.getHID().getAButton()) {
-             // X sets the velocity for the motors when aiming at the amp
-            shooter.mode = Mode.AMP_AIM;
-        } else if (operatorController.getHID().getBButton()) {
-            // B sets the angle for the arm when aiming at the speaker
-            shooter.mode = Mode.SPEAKER_AIM_MANUAL;
-        } else if (!driverController.getHID().getLeftBumper()) {
-            shooter.mode = Mode.IDLE;
-        } 
-        // else if ( intake.seesNote() ) {
-        //     shooter.mode = Mode.INTAKING;
-        // }
-        // Check (at the highest priority) if the trigger is pressed and the robot is ready to fire. Then drop the note into the firing mechanism
-        System.out.println( "Shooter mode: " + shooter.mode + ", isLoaded: " + intake.isLoaded() );
-        if ( operatorController.getHID().getRightBumper() ){
-            if ( shooter.mode == Mode.AMP_AIM){
-                shooter.mode = Mode.AMP_FIRING;
-            } else if ( shooter.mode == Mode.SPEAKER_AIM ){
+
+        System.out.println("Mode: " + shooter.mode.toString());
+
+        if ( operatorController.getHID().getLeftBumper() ){ // Left Bumper aims at the speaker
+            if ( operatorController.getHID().getRightBumper() ){ // Right bumper fires
                 shooter.mode = Mode.SPEAKER_FIRING;
             } else {
-                shooter.mode = shooter.mode;
+                shooter.mode = Mode.SPEAKER_AIM;
             }
+        } else if ( operatorController.getHID().getAButton() ){ // A aims at the Amp
+            if ( operatorController.getHID().getRightBumper() ){ // Right Bumper Fires
+                shooter.mode = Mode.AMP_FIRING;
+            } else {
+                shooter.mode = Mode.AMP_AIM;
+
+            }
+        } else {
+            if ( driverController.getHID().getLeftBumper() && !intake.isLoaded()) {
+                shooter.mode = Mode.INTAKING;
+                intake.run();
+            } else if ( driverController.getHID().getRightTriggerAxis() > 0.25 ) {
+                climber.mode = Constants.Climber.Mode.CLIMBER_UP;
+            } else {
+              shooter.mode = Mode.IDLE;
+              intake.stop();  
+            }
+            
         }
-        /*
-        if (
-            operatorController.getHID().getRightBumper() && 
-            ( shooter.mode == Mode.AMP_FIRING || shooter.mode == Mode.SPEAKER_FIRING )
-            ) {
-            // RT releases the note into the motors given that they are running 
-            shooter.mode = Mode.SCORE;
-        }
-        */
+
     }
 
     public void drive(){
-        // handles manual intake
-        if ( driverController.getHID().getLeftBumper() && !intake.isLoaded()){
-            shooter.mode = Mode.INTAKING;
-            intake.run();
-        } else {
-            intake.stop();
-        } 
+
         // handles drive speed and slow mode
-        double driveSpeed = Constants.Drivetrain.MAX_DRIVE_SPEED;
+        double driveMultiplier;
+
         if ( driverController.getHID().getRightBumper() ) {
-            driveSpeed = Constants.Drivetrain.SLOW_DRIVE_SPEED;
+            driveMultiplier = Constants.Drivetrain.SLOW_DRIVE_SPEED;
         } else {
-            driveSpeed = Constants.Drivetrain.MAX_DRIVE_SPEED;
+            driveMultiplier = 1;
         }
-    
-        // if ( intake.seesNote() && !intake.isLoaded() ) {
-        //     shooter.mode = Mode.INTAKING;
-        //     intake.run();
-        // }
 
 
         final var x =
             m_xspeedLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getLeftY(), 0.02))
-                * driveSpeed;
+                * driveMultiplier;
 
         final var y =
             -m_yspeedLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getLeftX(), 0.02))
-                * driveSpeed;
+                * driveMultiplier;
 
         final var rot =
             -m_rotLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getRightX(), 0.02))
-                * driveSpeed;
+                * driveMultiplier;
 
         swerve.drive(x, y, rot);
     }
-
-    public void testShooter(){
-        shooter.mode = Mode.TEST_IDLE;
-        System.out.println("Desired Angle: " + Vision.calculateArmAngle());
-        // closest one: 1.538 -> 1 m
-        // farthest one: 1.2801 -> 3.3528 m
-    }
-
-    public void testIntake(){
-        System.out.println( "Shooter mode: " + shooter.mode + ", isLoaded: " + intake.isLoaded() );
-        if (driverController.getHID().getLeftBumper() && !intake.isLoaded()) {
-            shooter.mode = Mode.INTAKING;
-            intake.run();
-        } else {
-            shooter.mode = Mode.IDLE;
-            intake.stop();
-        }
-        // if(intake.seesNote()) {
-        //     shooter.mode = Mode.INTAKING;
-        // } else {
-        //     shooter.mosde = Mode.IDLE;
-        // }
-    }
+    
 }

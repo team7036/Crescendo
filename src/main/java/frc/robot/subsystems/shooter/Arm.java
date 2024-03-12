@@ -70,7 +70,7 @@ public class Arm extends ProfiledPIDSubsystem {
     }
 
     public void initSendable(SendableBuilder builder){
-
+        builder.addDoubleProperty("angle", this::getMeasurement, null);
     }
 
 }

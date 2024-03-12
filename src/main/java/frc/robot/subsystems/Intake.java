@@ -2,8 +2,11 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -38,7 +41,7 @@ public class Intake extends SubsystemBase {
         if ( isLoaded() ){
             motor.set(0);
         } else {
-            motor.set(-1);
+            motor.set(Constants.Intake.INTAKE_SPEED);
         }
     }
 
@@ -46,5 +49,11 @@ public class Intake extends SubsystemBase {
         // stop running
         motor.set(0);
     }
+
+    @Override
+    public void initSendable(SendableBuilder builder){
+        builder.addBooleanProperty("loaded", this::isLoaded, null);        
+    }
+
 
 }

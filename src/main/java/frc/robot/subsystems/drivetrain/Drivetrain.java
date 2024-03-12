@@ -1,20 +1,18 @@
 package frc.robot.subsystems.drivetrain;
-
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Drivetrain.*;
-import frc.robot.subsystems.Vision;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -28,7 +26,7 @@ public class Drivetrain extends SubsystemBase {
     private SwerveModuleState[] moduleStates;
 
     // Setup NavX Gyro
-    private final AHRS gyro = new AHRS(SerialPort.Port.kMXP);
+    private static AHRS gyro = new AHRS(SPI.Port.kMXP);
 
     // Establish Kinematics (the shape of the drivetrain)
     private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
@@ -51,7 +49,7 @@ public class Drivetrain extends SubsystemBase {
     );
 
     public Drivetrain() {
-        gyro.reset();
+        gyro.zeroYaw();
         setupDashboard();
     }
 
@@ -101,6 +99,10 @@ public class Drivetrain extends SubsystemBase {
 
     public void rotateToSpeaker() {
         //double currentYaw = Vision.botpose[5];
+    }
+
+    @Override
+    public void initSendable( SendableBuilder builder){
     }
 
 }

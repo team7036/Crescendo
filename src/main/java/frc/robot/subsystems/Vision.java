@@ -4,14 +4,35 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.lang.Math;
 
 import frc.robot.Constants;
 import frc.robot.Constants.Shooter.Arm;
 
-public class Vision {
+public class Vision extends SubsystemBase {
+
+    static double speakerZOffset = Constants.Vision.SPEAKER_Z_OFFSET;
+    static double speakerXOffset = Constants.Vision.SPEAKER_X_OFFSET;
+
+    // 4.45 initially
+    public static double getSpeakerZOffset() {
+        return speakerZOffset;
+    }
+
+    public static void setSpeakerZOffset(double offset) {
+        speakerZOffset = offset;
+    }
+
+    // 0.1 initially
+    public static double getSpeakerXOffset() {
+       return speakerXOffset;
+    }
+
+    public static void setSpeakerXOffset(double offset) {
+        speakerXOffset = offset;
+    }
 
     private static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
@@ -98,19 +119,29 @@ public class Vision {
 
     }
 
-    public static double calculateArmAngle(  ) {
+    public static double calculateArmAngle( ) {
         if ( !hasValidTargets() ) {// Check to see if Limelight has a target){ 
-            System.out.println("ANGLE IS DEFAULT");
+            //System.out.println("ANGLE IS DEFAULT");
             return Arm.SPEAKER_ANGLE_SHORT;
         } else {
-            // System.out.println("BotPosX: " + AprilTag.getBotPose()[0]);
-            // System.out.println("BotPosY: " + AprilTag.getBotPose()[1]);
-            double botXPosFromTarget = (Constants.Field.fieldLength / 2) - (Math.abs(AprilTag.getBotPose()[0]));
-            // System.out.println("xPosFromTarget: " + botXPosFromTarget);
-            double botYPosFromTarget = Math.abs(AprilTag.getBotPose()[1]);
-            // System.out.println("yPosFromTarget: " + botYPosFromTarget);
-            double botDistanceFromTarget =  Math.sqrt((Math.pow(botXPosFromTarget, 2)) + (Math.pow(botYPosFromTarget, 2)));
-            double armAngle = Math.atan((Constants.Field.distanceFromBottomTargetToSpeaker / botDistanceFromTarget));
+            /*
+
+            AprilTag.getBotPose() returns the distance from the center of the field
+            ____________________________________________
+            |                                           |
+            |                   y                       |
+            |                   |                       |
+            |{}                 |____ x              {} |
+            |                                           |
+            |                                           |
+            |                                           |
+            |___________________________________________|
+
+             */
+            double xDistance = (Constants.Field.fieldLength / 2) - (Math.abs(AprilTag.getBotPose()[0]));
+            double yDistance = Math.abs(AprilTag.getBotPose()[1]);
+            double distanceFromSpeaker =  Math.sqrt((Math.pow(xDistance, 2)) + (Math.pow(yDistance, 2)));
+            double armAngle = Math.atan((Constants.Field.aprilTagDistanceFromGround + speakerZOffset) / (distanceFromSpeaker - speakerXOffset));
             armAngle += Constants.Shooter.Arm.ANGLE_OFFSET;
             return armAngle;
         }
