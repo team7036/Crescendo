@@ -11,24 +11,24 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Climber.Mode;
 
-public class Climber extends SubsystemBase{
+public class Climber extends SubsystemBase {
 
+    private final CANSparkMax raiseMotor;
     private final CANSparkMax liftMotor;
-    private final CANSparkMax lowerMotor;
 
     public Mode mode = Mode.CLIMBER_DOWN;
 
     public Climber() {
         // configure motor
-        liftMotor = new CANSparkMax(Constants.Climber.Ports.MOTOR_LIFT, MotorType.kBrushless);
+        raiseMotor = new CANSparkMax(Constants.Climber.Ports.MOTOR_LIFT, MotorType.kBrushless);
+        raiseMotor.setSoftLimit(SoftLimitDirection.kReverse, Constants.Climber.MIN_CLIMBER_HEIGHT) ;
+        raiseMotor.setSoftLimit(SoftLimitDirection.kForward, Constants.Climber.MAX_CLIMBER_HEIGHT);
+        raiseMotor.setIdleMode(IdleMode.kBrake);
+
+        liftMotor = new CANSparkMax(Constants.Climber.Ports.MOTOR_LOWER, MotorType.kBrushless);
         liftMotor.setSoftLimit(SoftLimitDirection.kReverse, Constants.Climber.MIN_CLIMBER_HEIGHT) ;
         liftMotor.setSoftLimit(SoftLimitDirection.kForward, Constants.Climber.MAX_CLIMBER_HEIGHT);
         liftMotor.setIdleMode(IdleMode.kBrake);
-
-        lowerMotor = new CANSparkMax(Constants.Climber.Ports.MOTOR_LOWER, MotorType.kBrushless);
-        lowerMotor.setSoftLimit(SoftLimitDirection.kReverse, Constants.Climber.MIN_CLIMBER_HEIGHT) ;
-        lowerMotor.setSoftLimit(SoftLimitDirection.kForward, Constants.Climber.MAX_CLIMBER_HEIGHT);
-        lowerMotor.setIdleMode(IdleMode.kBrake);
     }
 
     public void setHeight( double height ) {
