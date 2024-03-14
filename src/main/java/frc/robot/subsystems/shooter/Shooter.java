@@ -107,6 +107,7 @@ public class Shooter extends SubsystemBase {
             flyWheels.setSpeed(0);
         // speaker aim aims the arm at the speaker
         }
+
     }
 
     @Override
@@ -114,8 +115,6 @@ public class Shooter extends SubsystemBase {
         // SmartDashboard.putData("shooter/pid", arm.getController());
         SmartDashboard.putData("arm",arm);
         SmartDashboard.putData("flywheels", flyWheels);
-        builder.addDoubleProperty("speaker Z offset", Vision::getSpeakerZOffset, (offset)->Vision.setSpeakerZOffset(offset));
-        builder.addDoubleProperty("speaker X offset", Vision::getSpeakerXOffset, (offset)->Vision.setSpeakerXOffset(offset));
         builder.addDoubleProperty("calculatedAngle", Vision::calculateArmAngle, null);      
     }
 

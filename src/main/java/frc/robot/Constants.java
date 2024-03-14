@@ -6,9 +6,11 @@ public interface Constants {
 
     public interface Field {
         public double distanceFromBottomTargetToSpeaker = 0.92;
+        // 49 to bottom of april tag, 54.5 to middle, 78 in to bottom of speaker
+        // Bottom of Speaker: 1.981 m
         public double aprilTagLength = 0.1651; // in meters
         public double aprilTagDistanceFromGround = 1.368552 + (aprilTagLength / 2); // in meters, this is from the center of the target
-        public double speakerDistanceFromGround = 1.368552 + distanceFromBottomTargetToSpeaker;
+        public double speakerDistanceFromGround = 1.981; // 1.981
         public double speakerXOffsetFromAprilTag = 0.13;
         public double fieldWidth = 8.21; // in meters, width is always the shorter side
         public double fieldLength = 16.54; // in meters, length is always the longer side
@@ -19,11 +21,6 @@ public interface Constants {
     }
 
     public interface Vision {
-
-
-        //4.45, 0.1 
-        double SPEAKER_Z_OFFSET = 3.55;
-        double SPEAKER_X_OFFSET = 0.11;
     
         public enum LedMode {
             PIPELINE, OFF, BLINK, ON
@@ -60,10 +57,8 @@ public interface Constants {
 
     public interface Drivetrain {
 
-        double MAX_DRIVE_SPEED = 3.0;
-        double MAX_ANGULAR_VELOCITY = 2 * Math.PI;
-        double MAX_ANGULAR_ACCELERATION = 2 * Math.PI;
-        double SLOW_DRIVE_SPEED = 0.5;
+        double MAX_DRIVE_SPEED = 4.0;
+        double SLOW_DRIVE_SPEED = 1.0;
 
         public interface Swerve {
 
@@ -148,7 +143,8 @@ public interface Constants {
         public enum Mode {
             CLIMBER_DOWN,
             CLIMBER_UP,
-            COAST
+            COAST,
+            IDLE
         }
 
         float MIN_CLIMBER_HEIGHT = 0;
@@ -205,7 +201,7 @@ public interface Constants {
             double MAX_ACCELERATION = 2 * Math.PI;
             double POSITION_CONVERSION = 0.0293;
             double VELOCITY_CONVERSION = 0.0;
-            double SPEAKER_ANGLE_SHORT = 1.7959; // 1 Meter
+            double SPEAKER_ANGLE_SHORT = 2.0; // 1 Meter
         }
 
         public interface FlyWheels {
@@ -213,6 +209,13 @@ public interface Constants {
             double SPEAKER_SPEED = 2500;
             double AMP_SPEED = 50;
             double INTAKE_SPEED = -10;
+
+            public enum Mode {
+                INTAKING,
+                AMP_FIRE,
+                SPEAKER_FIRE,
+                IDLE
+            }
         }
     }
 }

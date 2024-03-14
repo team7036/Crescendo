@@ -1,5 +1,7 @@
 package frc.robot.subsystems.shooter;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -11,8 +13,10 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.Constants;
+import frc.robot.commands.ArmAngle;
 
 public class Arm extends ProfiledPIDSubsystem {
 
@@ -48,6 +52,7 @@ public class Arm extends ProfiledPIDSubsystem {
     }
 
     public void setAngle( double angle ){
+        SmartDashboard.putNumber("desired angle", angle);
         double output = m_controller.calculate(encoder.getPosition(), angle);
         double feed = feedforward.calculate(angle, 0);
         motor.setVoltage(output + feed);
@@ -71,6 +76,7 @@ public class Arm extends ProfiledPIDSubsystem {
 
     public void initSendable(SendableBuilder builder){
         builder.addDoubleProperty("angle", this::getMeasurement, null);
+        SmartDashboard.putData("set angle to 1", new ArmAngle(this, 1.0));
     }
 
 }

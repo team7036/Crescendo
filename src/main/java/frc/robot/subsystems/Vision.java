@@ -14,27 +14,6 @@ public class Vision extends SubsystemBase {
 
     static double[] lastBotPose = new double[6];
 
-    static double speakerZOffset = Constants.Vision.SPEAKER_Z_OFFSET;
-    static double speakerXOffset = Constants.Vision.SPEAKER_X_OFFSET;
-
-    // 4.45 initially
-    public static double getSpeakerZOffset() {
-        return speakerZOffset;
-    }
-
-    public static void setSpeakerZOffset(double offset) {
-        speakerZOffset = offset;
-    }
-
-    // 0.1 initially
-    public static double getSpeakerXOffset() {
-       return speakerXOffset;
-    }
-
-    public static void setSpeakerXOffset(double offset) {
-        speakerXOffset = offset;
-    }
-
     private static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
     public static boolean hasValidTargets(  ) {
@@ -132,7 +111,7 @@ public class Vision extends SubsystemBase {
             double xDistance = (Constants.Field.fieldLength / 2) - (Math.abs(lastBotPose[0]));
             double yDistance = Math.abs(lastBotPose[1]);
             double distanceFromSpeaker =  Math.sqrt((Math.pow(xDistance, 2)) + (Math.pow(yDistance, 2)));
-            double armAngle = Math.atan((Constants.Field.aprilTagDistanceFromGround + speakerZOffset) / (distanceFromSpeaker - speakerXOffset));
+            double armAngle = Math.atan(Constants.Field.speakerDistanceFromGround / distanceFromSpeaker);
             armAngle += Constants.Shooter.Arm.ANGLE_OFFSET;
             return armAngle; 
         } else {

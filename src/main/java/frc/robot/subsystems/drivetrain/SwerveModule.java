@@ -112,9 +112,10 @@ public class SwerveModule implements Sendable {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("swervemodule");
+        SmartDashboard.putData("drive pid", m_drivePIDController);
         builder.addDoubleProperty("turn/position", this::getTurnPosition, null);
-        builder.addDoubleProperty("drive/velocity", this.m_driveEncoder::getPosition, null);
-        builder.addDoubleProperty("drive/position", this.m_driveEncoder::getVelocity, null);
+        builder.addDoubleProperty("drive/velocity", this.m_driveEncoder::getVelocity, null);
+        builder.addDoubleProperty("drive/position", this.m_driveEncoder::getPosition, null);
     }
 
 }

@@ -16,7 +16,6 @@ public class RobotContainer {
 
     private final CommandXboxController driverController = new CommandXboxController(Constants.Controllers.DRIVER);
     private final CommandXboxController operatorController = new CommandXboxController(Constants.Controllers.OPERATOR);
-    private final XboxController driverControllerToRumble = new XboxController(Constants.Controllers.DRIVER);
     private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
@@ -25,22 +24,19 @@ public class RobotContainer {
     private final Intake intake = new Intake();
     private final Climber climber = new Climber();
 
-    boolean vibrate;
-
     public RobotContainer(){
         SmartDashboard.putData("drivetrain", swerve);
         SmartDashboard.putData("shooter", shooter);
         SmartDashboard.putData("intake", intake);
-        vibrate = false;
     }
 
-    // controls the Operator controller
+    // controls the operator controller
+
     public void operate() {
 
         if ( operatorController.getHID().getLeftBumper() ){ // Left Bumper aims at the speaker
             if ( operatorController.getHID().getRightBumper() ){ // Right bumper fires
                 shooter.mode = Mode.SPEAKER_FIRING;
-                vibrate = true; 
             } else {
                 shooter.mode = Mode.SPEAKER_AIM;
             }
@@ -49,56 +45,47 @@ public class RobotContainer {
                 shooter.mode = Mode.AMP_FIRING;
             } else {
                 shooter.mode = Mode.AMP_AIM;
-
             }
         } else {
-            if ( driverController.getHID().getLeftBumper() && !intake.isLoaded()) {
+            if ( (driverController.getHID().getLeftBumper() || operatorController.getHID().getYButton()) && !intake.isLoaded()) { // left bumper intakes
                 shooter.mode = Mode.INTAKING;
-                vibrate = true;
                 intake.run();
-            } else if ( driverController.getHID().getRightTriggerAxis() > 0.25 ) {
-                climber.mode = Constants.Climber.Mode.CLIMBER_UP;
-            } else {
+            }  else {
                 shooter.mode = Mode.IDLE;
-                vibrate = false;
                 intake.stop();  
             }
-            
         }
 
-        if ( vibrate ) {
-            driverControllerToRumble.setRumble(RumbleType.kLeftRumble, 1);
-            driverControllerToRumble.setRumble(RumbleType.kRightRumble, 1);
+        if ( operatorController.getHID().getLeftTriggerAxis() > 0.25 ) { // RT -> climber up
+            climber.up();
+        } 
+        else if ( operatorController.getHID().getRightTriggerAxis() > 0.25 ) { // LT -> climber down
+            climber.down();
         } else {
-            driverControllerToRumble.setRumble(RumbleType.kLeftRumble, 0);
-            driverControllerToRumble.setRumble(RumbleType.kRightRumble, 0);
+            climber.stay();
         }
 
     }
 
-    public void drive(){
-        // handles drive speed and slow mode
-        double driveMultiplier;
+    // controls the driver controller
 
-        if ( driverController.getHID().getRightBumper() ) {
-            driveMultiplier = Constants.Drivetrain.SLOW_DRIVE_SPEED;
-        } else {
-            driveMultiplier = 1;
-        }
+    public void drive( double period ){
+
+        boolean slow = driverController.getHID().getRightBumper() ? true : false;
 
         final var x =
             m_xspeedLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getLeftY(), 0.02))
-                * driveMultiplier;
+                * (slow ? Constants.Drivetrain.SLOW_DRIVE_SPEED : Constants.Drivetrain.MAX_DRIVE_SPEED);
 
         final var y =
             -m_yspeedLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getLeftX(), 0.02))
-                * driveMultiplier;
+                * (slow ? Constants.Drivetrain.SLOW_DRIVE_SPEED : Constants.Drivetrain.MAX_DRIVE_SPEED);
 
         final var rot =
             -m_rotLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getRightX(), 0.02))
-                * driveMultiplier;
+                * (slow ? Constants.Drivetrain.SLOW_DRIVE_SPEED : Constants.Drivetrain.MAX_DRIVE_SPEED);
 
-        swerve.drive(x, y, rot);
+        swerve.drive(x, y, rot, period);
     }
     
 }
