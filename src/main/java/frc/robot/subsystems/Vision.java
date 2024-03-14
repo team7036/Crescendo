@@ -101,7 +101,7 @@ public class Vision extends SubsystemBase {
 
     public static double calculateArmAngle( ) {
 
-        if ( hasValidTargets() ) {// Check to see if Limelight has a target){
+        if ( hasValidTargets() ) {// Check to see if Limelight has a target
             // update the bot's position
             lastBotPose = AprilTag.getBotPose();
         }
@@ -111,7 +111,7 @@ public class Vision extends SubsystemBase {
             double xDistance = (Constants.Field.fieldLength / 2) - (Math.abs(lastBotPose[0]));
             double yDistance = Math.abs(lastBotPose[1]);
             double distanceFromSpeaker =  Math.sqrt((Math.pow(xDistance, 2)) + (Math.pow(yDistance, 2)));
-            double armAngle = Math.atan(Constants.Field.speakerDistanceFromGround / distanceFromSpeaker);
+            double armAngle = Math.atan((Constants.Field.Speaker.SPEAKER_CENTER_HEIGHT-Constants.Shooter.Arm.PIVOT_POINT_HEIGHT) / distanceFromSpeaker);
             armAngle += Constants.Shooter.Arm.ANGLE_OFFSET;
             return armAngle; 
         } else {

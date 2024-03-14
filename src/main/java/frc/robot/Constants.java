@@ -5,6 +5,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 public interface Constants {
 
     public interface Field {
+
+        public interface Speaker {
+            public double SPEAKER_BOTTOM_HEIGHT = 1.98;
+            public double SPEAKER_TOP_HEIGHT = 2.11;
+            public double SPEAKER_CENTER_HEIGHT = ( SPEAKER_BOTTOM_HEIGHT + SPEAKER_TOP_HEIGHT ) / 2;
+            public double SUBWOOFER_TO_WALL = 0.92;
+        }
         public double distanceFromBottomTargetToSpeaker = 0.92;
         // 49 to bottom of april tag, 54.5 to middle, 78 in to bottom of speaker
         // Bottom of Speaker: 1.981 m
@@ -14,6 +21,7 @@ public interface Constants {
         public double speakerXOffsetFromAprilTag = 0.13;
         public double fieldWidth = 8.21; // in meters, width is always the shorter side
         public double fieldLength = 16.54; // in meters, length is always the longer side
+
     }
 
     public enum RobotState {
@@ -191,8 +199,10 @@ public interface Constants {
                 double kG = 1;
                 double kV = 4.4;
             }
-            
-            double ANGLE_OFFSET = 0.547042;
+
+            double PIVOT_POINT_HEIGHT = 0.61;
+            double ANGLE_OFFSET = 1.0;
+            double SPEAKER_ANGLE_SHORT = 2.0; // 1 Meter
             double AMP_ANGLE = Math.PI;
             double INTAKE_ANGLE = 0.1;
             float MAX_ANGLE = (float) AMP_ANGLE;
@@ -201,7 +211,6 @@ public interface Constants {
             double MAX_ACCELERATION = 2 * Math.PI;
             double POSITION_CONVERSION = 0.0293;
             double VELOCITY_CONVERSION = 0.0;
-            double SPEAKER_ANGLE_SHORT = 2.0; // 1 Meter
         }
 
         public interface FlyWheels {
