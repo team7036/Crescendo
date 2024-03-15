@@ -4,6 +4,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 public interface Constants {
 
+    public enum Autonomous {
+        DO_NOTHING,
+        TEST
+    }
+
     public interface Field {
 
         public interface Speaker {
@@ -144,8 +149,8 @@ public interface Constants {
 
     public interface Climber {
         public interface Ports {
-            int MOTOR_LIFT = 6;
-            int MOTOR_LOWER = 7;
+            int BOTTOM_MOTOR = 6;
+            int TOP_MOTOR = 50;
         }
 
         public enum Mode {
@@ -155,11 +160,20 @@ public interface Constants {
             IDLE
         }
 
-        float MIN_CLIMBER_HEIGHT = 0;
-        float MAX_CLIMBER_HEIGHT = 5;
+        // 30 cm -> 63.28 Rotations
 
-        double POSITION_CONVERSION = 0.0293;
-        double VELOCITY_CONVERSION = 0.0;
+        double TOP_POSITION_CONVERSION = 0.30/63.28;
+        float TOP_REVERSE_LIMIT = (float) 0;
+        float TOP_FORWARD_LIMIT = (float) 0.3;
+        double TOP_UP_SPEED = 0.15;
+        double TOP_DOWN_SPEED = -0.15;
+
+        double BOTTOM_POSITION_CONVERSION = 0.3/325;
+        float BOTTOM_REVERSE_LIMIT = (float) 0;
+        float BOTTOM_FORWARD_LIMIT = (float) 0.3;
+        double BOTTOM_UP_SPEED = -1;
+        double BOTTOM_DOWN_SPEED = 1;
+        
     }
 
     public interface Shooter {
@@ -180,8 +194,8 @@ public interface Constants {
         }
 
         public interface Ports {
-            int TOP_MOTOR = 61;
-            int BOTTOM_MOTOR = 60;
+            int TOP_MOTOR = 60;
+            int BOTTOM_MOTOR = 61;
             int ARM_MOTOR = 55;
             int STAGING_SERVO = 5;
             int SENSOR = 2;
@@ -201,8 +215,8 @@ public interface Constants {
             }
 
             double PIVOT_POINT_HEIGHT = 0.61;
-            double ANGLE_OFFSET = 1.0;
-            double SPEAKER_ANGLE_SHORT = 2.0; // 1 Meter
+            double ANGLE_OFFSET = 1.15;
+            double SPEAKER_ANGLE_SHORT = 1.8; // 1 Meter
             double AMP_ANGLE = Math.PI;
             double INTAKE_ANGLE = 0.1;
             float MAX_ANGLE = (float) AMP_ANGLE;

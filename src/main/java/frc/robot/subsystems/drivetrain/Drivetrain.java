@@ -1,7 +1,8 @@
 package frc.robot.subsystems.drivetrain;
+import java.util.concurrent.TimeUnit;
+
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -9,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -39,8 +41,6 @@ public class Drivetrain extends SubsystemBase {
         Translation.BACK_RIGHT
     );
 
-    private final PIDController turnController = new PIDController(1, 0, 0);
-
     // Establish Odometry (the position of each wheel)
     private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
         m_kinematics,
@@ -54,9 +54,6 @@ public class Drivetrain extends SubsystemBase {
     );
 
     public Drivetrain() {
-        gyro.zeroYaw();
-        gyro.setAngleAdjustment(Math.PI / 180);
-        turnController.enableContinuousInput(0, 2 * Math.PI);
         setupDashboard();
     }
 
@@ -65,17 +62,6 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putData("drivetrain/frontleft", m_frontLeft);
         SmartDashboard.putData("drivetrain/backleft", m_backLeft);
         SmartDashboard.putData("drivetrain/frontright", m_frontRight);
-    }
-
-    public double getHeading(){
-        return targetHeading;
-    }
-
-    public void setHeading( double heading ) {
-        turnController.setSetpoint(heading);
-        double rotVel = turnController.calculate( gyro.getYaw(), heading);
-        //drive(0, 0, rotVel);
-        targetHeading = heading;
     }
 
     @Override
@@ -92,12 +78,18 @@ public class Drivetrain extends SubsystemBase {
         );
     }
 
-    public void drive( double x, double y, double rot, double period){
-        
-        // ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d())
-        
+    public void resetGyro(){
+        gyro.reset();
+    }
+
+    public void drive( double x, double y, double rot, boolean fieldRelative, double period){
+                
         moduleStates = m_kinematics.toSwerveModuleStates(
-            ChassisSpeeds.discretize( new ChassisSpeeds(x, y, rot), period )
+            ChassisSpeeds.discretize(
+                fieldRelative ?
+                ChassisSpeeds.fromFieldRelativeSpeeds( x, y, rot, gyro.getRotation2d() ) :
+                new ChassisSpeeds(x,y,rot)
+            , period)
         );
         
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Constants.Drivetrain.MAX_DRIVE_SPEED);
@@ -111,7 +103,6 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void initSendable( SendableBuilder builder){
-        builder.addDoubleProperty("target heading", this::getHeading, (heading)->setHeading(heading));
         builder.addDoubleProperty("current heading", gyro::getYaw, null);
     }
 

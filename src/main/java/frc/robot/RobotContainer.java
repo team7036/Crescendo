@@ -2,8 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Shooter.Mode;
@@ -23,11 +22,18 @@ public class RobotContainer {
     private final Shooter shooter = new Shooter();
     private final Intake intake = new Intake();
     private final Climber climber = new Climber();
+    private static boolean fieldRelative = false;
 
     public RobotContainer(){
         SmartDashboard.putData("drivetrain", swerve);
         SmartDashboard.putData("shooter", shooter);
         SmartDashboard.putData("intake", intake);
+    }
+
+    public void autoMoveForward(double period){
+        swerve.drive(0, 0.1, 0, false, period);
+        Timer.delay(2);
+        swerve.drive(0, 0, 0, false, period);
     }
 
     // controls the operator controller
@@ -55,7 +61,7 @@ public class RobotContainer {
                 intake.stop();  
             }
         }
-
+        
         if ( operatorController.getHID().getLeftTriggerAxis() > 0.25 ) { // RT -> climber up
             climber.up();
         } 
@@ -69,10 +75,18 @@ public class RobotContainer {
 
     // controls the driver controller
 
+    public void resetGyro(){
+        swerve.resetGyro();
+    }
+
     public void drive( double period ){
 
         boolean slow = driverController.getHID().getRightBumper() ? true : false;
-
+        SmartDashboard.putBoolean("slowMode", slow);
+        if ( driverController.getHID().getAButtonPressed() ){
+            fieldRelative = !fieldRelative;
+        }
+        SmartDashboard.putBoolean("FieldRelative", fieldRelative);
         final var x =
             m_xspeedLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getLeftY(), 0.02))
                 * (slow ? Constants.Drivetrain.SLOW_DRIVE_SPEED : Constants.Drivetrain.MAX_DRIVE_SPEED);
@@ -85,7 +99,7 @@ public class RobotContainer {
             -m_rotLimiter.calculate(MathUtil.applyDeadband(driverController.getHID().getRightX(), 0.02))
                 * (slow ? Constants.Drivetrain.SLOW_DRIVE_SPEED : Constants.Drivetrain.MAX_DRIVE_SPEED);
 
-        swerve.drive(x, y, rot, period);
+        swerve.drive(x, y, rot * 0.9, fieldRelative, period);
     }
     
 }

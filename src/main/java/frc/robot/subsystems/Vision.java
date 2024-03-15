@@ -113,7 +113,7 @@ public class Vision extends SubsystemBase {
             double distanceFromSpeaker =  Math.sqrt((Math.pow(xDistance, 2)) + (Math.pow(yDistance, 2)));
             double armAngle = Math.atan((Constants.Field.Speaker.SPEAKER_CENTER_HEIGHT-Constants.Shooter.Arm.PIVOT_POINT_HEIGHT) / distanceFromSpeaker);
             armAngle += Constants.Shooter.Arm.ANGLE_OFFSET;
-            return armAngle; 
+            return armAngle;
         } else {
             // returns a default angle if theres not valid numbers
             return Constants.Shooter.Arm.SPEAKER_ANGLE_SHORT;

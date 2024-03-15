@@ -5,7 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.Autonomous;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -15,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
 
+  private SendableChooser<Autonomous> autoChooser = new SendableChooser<>();
   private RobotContainer robotContainer;
 
   /**
@@ -24,6 +28,10 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     robotContainer = new RobotContainer();
+    autoChooser.addOption("Test", Autonomous.TEST);
+    autoChooser.addOption("Do Nothing", Autonomous.DO_NOTHING);
+    autoChooser.setDefaultOption("Do Nothing", Autonomous.DO_NOTHING);
+    SmartDashboard.putData("Auto", autoChooser);
   }
 
   /**
@@ -42,7 +50,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-
+    //selectedAuto = autoChooser.getSelected();
+    robotContainer.resetGyro();
   }
 
   /** This function is called periodically during autonomous. */
@@ -52,7 +61,8 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+  }
 
   /** This function is called periodically during operator control. */
   @Override
@@ -73,7 +83,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-
+    //robotContainer.autoMoveForward(getPeriod());
   }
 
   /** This function is called periodically during test mode. */
