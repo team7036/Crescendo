@@ -18,6 +18,7 @@ import frc.robot.Constants.Autonomous;
  */
 public class Robot extends TimedRobot {
 
+  private static double autoTime;
   private SendableChooser<Autonomous> autoChooser = new SendableChooser<>();
   private RobotContainer robotContainer;
 
@@ -32,6 +33,8 @@ public class Robot extends TimedRobot {
     autoChooser.addOption("Do Nothing", Autonomous.DO_NOTHING);
     autoChooser.setDefaultOption("Do Nothing", Autonomous.DO_NOTHING);
     SmartDashboard.putData("Auto", autoChooser);
+
+    
   }
 
   /**
@@ -50,13 +53,18 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    //selectedAuto = autoChooser.getSelected();
     robotContainer.resetGyro();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    // if ( autoChooser.getSelected() == Autonomous.DO_NOTHING ){
+
+    // } else if ( autoChooser.getSelected() == Autonomous.SIMPLE_FORWARD ){
+    //   robotContainer.autoMoveForward( Timer.getMatchTime() , getPeriod());
+    // }
+    
   }
 
   /** This function is called once when teleop is enabled. */
@@ -89,8 +97,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    robotContainer.drive(getPeriod());
-    robotContainer.operate();
   }
   /* 
   private void driveWithJoystick(boolean fieldRelative){

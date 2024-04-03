@@ -76,7 +76,6 @@ public class Arm extends ProfiledPIDSubsystem {
 
     public void initSendable(SendableBuilder builder){
         builder.addDoubleProperty("angle", this::getMeasurement, null);
-        SmartDashboard.putData("set angle to 1", new ArmAngle(this, 1.0));
     }
 
 }

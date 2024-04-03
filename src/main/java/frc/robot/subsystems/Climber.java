@@ -14,10 +14,6 @@ public class Climber extends SubsystemBase {
 
     private final CANSparkMax topMotor;
     private final CANSparkMax bottomMotor;
-    private final double raiseSpeed = 0.15;
-    private final double lowerSpeed = -0.75;
-    private final RelativeEncoder topMotorEncoder;
-    private final RelativeEncoder bottomMotorEncoder;
 
     public Mode mode = Mode.IDLE;
 
@@ -27,13 +23,11 @@ public class Climber extends SubsystemBase {
         topMotor.setSoftLimit(SoftLimitDirection.kReverse, Constants.Climber.TOP_REVERSE_LIMIT) ;
         topMotor.setSoftLimit(SoftLimitDirection.kForward, Constants.Climber.TOP_FORWARD_LIMIT);
         topMotor.setIdleMode(IdleMode.kBrake);
-        topMotorEncoder = topMotor.getEncoder();
 
         bottomMotor = new CANSparkMax(Constants.Climber.Ports.BOTTOM_MOTOR, MotorType.kBrushless);
         bottomMotor.setSoftLimit(SoftLimitDirection.kReverse, Constants.Climber.BOTTOM_REVERSE_LIMIT) ;
         bottomMotor.setSoftLimit(SoftLimitDirection.kForward, Constants.Climber.BOTTOM_FORWARD_LIMIT);
         bottomMotor.setIdleMode(IdleMode.kBrake);
-        bottomMotorEncoder = bottomMotor.getEncoder();
     }
 
     public void up() {

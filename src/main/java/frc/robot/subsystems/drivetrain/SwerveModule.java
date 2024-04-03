@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -49,7 +50,7 @@ public class SwerveModule implements Sendable {
         m_driveEncoder.setVelocityConversionFactor( Swerve.Drive.VELOCITY_CONVERSION ); // Convert from RPM to m/s
     }
 
-    public double getTurnPosition(){
+    public double getTurnPosition(){ // in rad
         return m_turnEncoder.getAbsolutePosition().getValue() * 2 * Math.PI;
     }
 
@@ -58,8 +59,7 @@ public class SwerveModule implements Sendable {
         final double turnOutput = 
             m_turnPIDContoller.calculate(this.getTurnPosition(), angle);
 
-        final double turnFeedFoward = 
-            m_turnFeedForward.calculate(m_turnPIDContoller.getSetpoint().velocity);
+        final double turnFeedFoward = m_turnFeedForward.calculate(m_turnPIDContoller.getSetpoint().velocity);
 
         m_turnMotor.setVoltage(turnOutput + turnFeedFoward);
 
@@ -105,14 +105,21 @@ public class SwerveModule implements Sendable {
 
     }
 
-    public Command setTurnPositionCommand(double angle){
-        return Commands.run(()->setTurnPosition(angle));
+
+    public double getTurnVoltage(){
+        return m_turnMotor.getAppliedOutput() * m_turnMotor.getBusVoltage();
+    }
+
+    public double getTurnVelocity(){
+        return m_turnEncoder.getVelocity().getValueAsDouble() * 2 * Math.PI;
     }
 
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("swervemodule");
-        SmartDashboard.putData("drive pid", m_drivePIDController);
+        SmartDashboard.putData("turn PID", m_turnPIDContoller);
+        builder.addDoubleProperty("turn/voltage", this::getTurnVoltage, null);
+        builder.addDoubleProperty("turn/velocity", this::getTurnVelocity, null);
         builder.addDoubleProperty("turn/position", this::getTurnPosition, null);
         builder.addDoubleProperty("drive/velocity", this.m_driveEncoder::getVelocity, null);
         builder.addDoubleProperty("drive/position", this.m_driveEncoder::getPosition, null);

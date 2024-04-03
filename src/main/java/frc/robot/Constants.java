@@ -6,6 +6,7 @@ public interface Constants {
 
     public enum Autonomous {
         DO_NOTHING,
+        SIMPLE_FORWARD,
         TEST
     }
 
@@ -83,9 +84,9 @@ public interface Constants {
                 double VELOCITY_CONVERSION = POSITION_CONVERSION / 60; // RPM to m/s
 
                 public interface PID {
-                    double kP = 0.01;
-                    double kI = 20;
-                    double kD = 0.01;
+                    double kP = 1;
+                    double kI = 0;
+                    double kD = 0;
                 }
 
                 public interface Feedforward {
@@ -100,13 +101,13 @@ public interface Constants {
                 double MAX_ACCELERATION = 2 * Math.PI;
 
                 public interface PID {
-                    double kP = 9;
-                    double kI = 0.05;
-                    double kD = 0.03;
+                    double kP = 7;
+                    double kI = 0;
+                    double kD = 0;
                 }
                 public interface Feedforward {
-                    double kS = 1;
-                    double kV = 0.5;
+                    double kS = 1; // Volts
+                    double kV = 2.3; // Volts/Velocity
                 }
             }
         }
@@ -171,8 +172,8 @@ public interface Constants {
         double BOTTOM_POSITION_CONVERSION = 0.3/325;
         float BOTTOM_REVERSE_LIMIT = (float) 0;
         float BOTTOM_FORWARD_LIMIT = (float) 0.3;
-        double BOTTOM_UP_SPEED = -1;
-        double BOTTOM_DOWN_SPEED = 1;
+        double BOTTOM_UP_SPEED = 1;
+        double BOTTOM_DOWN_SPEED = 0;
         
     }
 

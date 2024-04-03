@@ -31,6 +31,10 @@ public class Shooter extends SubsystemBase {
         sensor = new DigitalInput(Constants.Shooter.Ports.SENSOR);
     }
 
+    public void setAngle( double angle ){
+        arm.setGoal(angle);
+    }
+
     /*
     public Command setAngleCommand( double angle ){
         return this.runOnce(() -> {
