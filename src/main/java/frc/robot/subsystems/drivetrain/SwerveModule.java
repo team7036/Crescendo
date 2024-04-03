@@ -14,10 +14,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.Drivetrain.Swerve;
 
 public class SwerveModule implements Sendable {
@@ -28,14 +24,26 @@ public class SwerveModule implements Sendable {
     private final CANSparkMax m_turnMotor;
     private final CANcoder m_turnEncoder;
 
-    // Create PID Controllers and set Gains
-    private final PIDController m_drivePIDController = new PIDController(Swerve.Drive.PID.kP, Swerve.Drive.PID.kI, Swerve.Drive.PID.kD);
-    private final TrapezoidProfile.Constraints turningConstraints = new TrapezoidProfile.Constraints( Swerve.Turn.MAX_VELOCITY, Swerve.Turn.MAX_ACCELERATION );
-    private final ProfiledPIDController m_turnPIDContoller = new ProfiledPIDController(Swerve.Turn.PID.kP, Swerve.Turn.PID.kI, Swerve.Turn.PID.kD, turningConstraints);
-
-    // Setup Motor Feeds
-    private final SimpleMotorFeedforward m_driveFeedForward = new SimpleMotorFeedforward(Swerve.Drive.Feedforward.kS, Swerve.Drive.Feedforward.kV);
-    private final SimpleMotorFeedforward m_turnFeedForward = new SimpleMotorFeedforward(Swerve.Turn.Feedforward.kS, Swerve.Turn.Feedforward.kV);
+    // Create PID and Feed Forward Controllers
+    private final PIDController m_drivePIDController = new PIDController(
+        Swerve.Drive.PID.kP, 
+        Swerve.Drive.PID.kI, 
+        Swerve.Drive.PID.kD
+    );
+    private final SimpleMotorFeedforward m_driveFeedForward = new SimpleMotorFeedforward(
+        Swerve.Drive.Feedforward.kS, 
+        Swerve.Drive.Feedforward.kV
+    );
+    private final ProfiledPIDController m_turnPIDContoller = new ProfiledPIDController(
+        Swerve.Turn.PID.kP, 
+        Swerve.Turn.PID.kI, 
+        Swerve.Turn.PID.kD,
+        new TrapezoidProfile.Constraints( Swerve.Turn.MAX_VELOCITY, Swerve.Turn.MAX_ACCELERATION )
+    );
+    private final SimpleMotorFeedforward m_turnFeedForward = new SimpleMotorFeedforward(
+        Swerve.Turn.Feedforward.kS, 
+        Swerve.Turn.Feedforward.kV
+    );
 
     public SwerveModule(int turnMotorID, int driveMotorID, int turnEncoderID){
 
@@ -90,36 +98,24 @@ public class SwerveModule implements Sendable {
 
     public void setDesiredState( SwerveModuleState desiredState ){
 
-        var encoderRotation = new Rotation2d( this.getTurnPosition() );
+        var rotation = new Rotation2d( this.getTurnPosition() );
 
         // Optimize the reference state to avoid spinning further than 90 degrees
-        SwerveModuleState state = SwerveModuleState.optimize(desiredState, encoderRotation);
+        SwerveModuleState state = SwerveModuleState.optimize(desiredState, rotation);
 
         // Scale speed by cosine of angle error. This scales down movement perpendicular to the desired
         // direction of travel that can occur when modules change directions. This results in smoother
         // driving.
-        state.speedMetersPerSecond *= state.angle.minus(encoderRotation).getCos();
+        state.speedMetersPerSecond *= state.angle.minus(rotation).getCos();
 
         this.setDriveVelocity(state.speedMetersPerSecond);
         this.setTurnPosition(state.angle.getRadians());
 
     }
 
-
-    public double getTurnVoltage(){
-        return m_turnMotor.getAppliedOutput() * m_turnMotor.getBusVoltage();
-    }
-
-    public double getTurnVelocity(){
-        return m_turnEncoder.getVelocity().getValueAsDouble() * 2 * Math.PI;
-    }
-
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("swervemodule");
-        SmartDashboard.putData("turn PID", m_turnPIDContoller);
-        builder.addDoubleProperty("turn/voltage", this::getTurnVoltage, null);
-        builder.addDoubleProperty("turn/velocity", this::getTurnVelocity, null);
         builder.addDoubleProperty("turn/position", this::getTurnPosition, null);
         builder.addDoubleProperty("drive/velocity", this.m_driveEncoder::getVelocity, null);
         builder.addDoubleProperty("drive/position", this.m_driveEncoder::getPosition, null);

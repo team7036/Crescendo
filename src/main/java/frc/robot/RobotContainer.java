@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Shooter.Mode;
 import frc.robot.subsystems.Climber;
@@ -12,30 +13,42 @@ import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
 
+    // Initialize Controllers
     private final CommandXboxController driverController = new CommandXboxController(Constants.Controllers.DRIVER);
     private final CommandXboxController operatorController = new CommandXboxController(Constants.Controllers.OPERATOR);
     private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
-    private final Drivetrain swerve = new Drivetrain();
+
+    // Initialize Subsystems
+    public static Drivetrain swerve = new Drivetrain();
     public static Shooter shooter = new Shooter();
-    private final Intake intake = new Intake();
-    private final Climber climber = new Climber();
-    private static boolean fieldRelative = false;
+    public static Intake intake = new Intake();
+    public static Climber climber = new Climber();
+    public static boolean fieldRelative = false;
 
     public RobotContainer(){
         SmartDashboard.putData("drivetrain", swerve);
         SmartDashboard.putData("shooter", shooter);
         SmartDashboard.putData("intake", intake);
+
+        setDriverBindings();
+        setOperatorBindings();
     }
 
-    public void autoMoveForward(double timeRemaining, double period){
-        System.out.println(timeRemaining);
-        if ( timeRemaining < 14 ){
-            swerve.drive(0.5, 0, 0, false, period);
-        } else {
-            swerve.drive(0, 0, 0, false, period);
-        }
+    private void setOperatorBindings(){
+
+    }
+
+    private void setDriverBindings(){
+
+        swerve.setDefaultCommand(
+            new RunCommand(
+                () -> swerve.drive( driverController.getLeftY() , driverController.getLeftX(), driverController.getRightX()),
+                swerve
+            )
+        );
+
     }
 
     // controls the operator controller
@@ -104,7 +117,7 @@ public class RobotContainer {
             m_rotLimiter.calculate(MathUtil.applyDeadband(-driverController.getHID().getRightX(), 0.02))
                 * (slow ? Constants.Drivetrain.SLOW_DRIVE_SPEED : Constants.Drivetrain.MAX_DRIVE_SPEED);
 
-        swerve.drive(x, y, rot, fieldRelative, period);
+        swerve.drive(x, y, rot);
     }
-    
+
 }

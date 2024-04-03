@@ -16,7 +16,6 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.Constants;
-import frc.robot.commands.ArmAngle;
 
 public class Arm extends ProfiledPIDSubsystem {
 

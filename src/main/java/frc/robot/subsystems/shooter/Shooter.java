@@ -13,9 +13,9 @@ public class Shooter extends SubsystemBase {
 
     public Mode mode = Mode.IDLE;
     // Shooter Flywheels
-    private final FlyWheels flyWheels;
+    public final FlyWheels flyWheels;
     // Shooter Arm
-    private final Arm arm;
+    public final Arm arm;
     // Staging Servo
     private final Servo stagingServo;
     // Inputs
