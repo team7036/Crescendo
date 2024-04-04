@@ -72,7 +72,9 @@ public interface Constants {
     public interface Drivetrain {
 
         double MAX_DRIVE_SPEED = 4.0;
+        double MAX_TURN_SPEED = 2 * Math.PI;
         double SLOW_DRIVE_SPEED = 1.0;
+        double SLOW_TURN_SPEED = MAX_TURN_SPEED / ( MAX_DRIVE_SPEED / SLOW_DRIVE_SPEED );
 
         public interface Swerve {
 
@@ -84,14 +86,14 @@ public interface Constants {
                 double VELOCITY_CONVERSION = POSITION_CONVERSION / 60; // RPM to m/s
 
                 public interface PID {
-                    double kP = 1;
+                    double kP = 1.2;
                     double kI = 0;
-                    double kD = 0;
+                    double kD = 0.001;
                 }
 
                 public interface Feedforward {
-                    double kS = 1; // volts
-                    double kV = 2.6; // volts / velocity
+                    double kS = 0.5; // volts
+                    double kV = 2.3; // volts / velocity
                 }
 
             }
@@ -101,13 +103,13 @@ public interface Constants {
                 double MAX_ACCELERATION = 2 * Math.PI;
 
                 public interface PID {
-                    double kP = 7;
+                    double kP = 12;
                     double kI = 0;
-                    double kD = 0;
+                    double kD = 0.01;
                 }
                 public interface Feedforward {
-                    double kS = 1; // Volts
-                    double kV = 2.3; // Volts/Velocity
+                    double kS = 0; // Volts
+                    double kV = 0; // Volts/Velocity
                 }
             }
         }
@@ -139,12 +141,11 @@ public interface Constants {
 
         public interface Ports {
             int MOTOR = 40;
-            int INTAKE_SENSOR_INPUT = 6;
-            int INTAKE_SENSOR_OUTPUT = 5;
-            int LOADED_SENSOR = 7;
+            int LOWER_SENSOR = 2;
+            int UPPER_SENSOR = 1;
         }
 
-        double INTAKE_SPEED = -1;
+        double INTAKE_SPEED = -0.5;
 
     }
 
@@ -202,17 +203,24 @@ public interface Constants {
             int SENSOR = 2;
         }
 
+        public interface StagingServo {
+            double INTAKE_SPEED = 180;
+            double FIRE_SPEED = 0;
+            double STOP_SPEED = 90;
+        }
+
         public interface Arm {
 
             public interface PID {
-                double kP = 15;
-                double kI = 10;
-                double kD = 1;    
+                double kP = 40;
+                double kI = 0;
+                double kD = 1;
             }
             public interface Feedforward {
-                double kS = 1;
-                double kG = 1;
-                double kV = 4.4;
+                double kS = 12; // Static Gain
+                double kG = 0.4; // Gravity Gain
+                double kV = 7.29; // Velocity Gain, Volts * Seconds / Radian
+                double kA = 0; // Acceleration Gain
             }
 
             double PIVOT_POINT_HEIGHT = 0.61;
@@ -229,10 +237,11 @@ public interface Constants {
         }
 
         public interface FlyWheels {
+
             double SPEED_CONVERSION = 10/18;
             double SPEAKER_SPEED = 2500;
             double AMP_SPEED = 50;
-            double INTAKE_SPEED = -10;
+            double INTAKE_SPEED = -50;
 
             public enum Mode {
                 INTAKING,

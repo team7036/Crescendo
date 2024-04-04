@@ -1,11 +1,14 @@
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Shooter.Mode;
+import frc.robot.commands.IntakeNote;
+import frc.robot.commands.shooter.ArmAngle;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -16,9 +19,6 @@ public class RobotContainer {
     // Initialize Controllers
     private final CommandXboxController driverController = new CommandXboxController(Constants.Controllers.DRIVER);
     private final CommandXboxController operatorController = new CommandXboxController(Constants.Controllers.OPERATOR);
-    private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
-    private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
-    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
 
     // Initialize Subsystems
     public static Drivetrain swerve = new Drivetrain();
@@ -28,34 +28,53 @@ public class RobotContainer {
     public static boolean fieldRelative = false;
 
     public RobotContainer(){
+
         SmartDashboard.putData("drivetrain", swerve);
         SmartDashboard.putData("shooter", shooter);
         SmartDashboard.putData("intake", intake);
-
         setDriverBindings();
         setOperatorBindings();
     }
 
     private void setOperatorBindings(){
+        /*
+        operatorController.leftBumper()
+            .onTrue( new SetArmAngle(1) )
+            .onFalse( new SetArmAngle(0) );
+            */
 
+        operatorController.a()
+            .onTrue( new ArmAngle(Constants.Shooter.Arm.AMP_ANGLE) )
+            .onFalse( new ArmAngle(0) );
     }
 
     private void setDriverBindings(){
 
         swerve.setDefaultCommand(
             new RunCommand(
-                () -> swerve.drive( driverController.getLeftY() , driverController.getLeftX(), driverController.getRightX()),
+                () -> swerve.drive( driverController.getLeftY() , -driverController.getLeftX(), -driverController.getRightX()),
                 swerve
             )
         );
 
+        driverController.leftBumper()
+            .onTrue( new SequentialCommandGroup(
+                new ArmAngle(Constants.Shooter.Arm.INTAKE_ANGLE),
+                new RunCommand(()->{
+                    intake.run();
+                    shooter.intake();
+                }).until( RobotContainer.intake::isLoaded )
+            )).onFalse(new InstantCommand(()->{
+                intake.stop();
+                shooter.stop();
+            }));
     }
 
     // controls the operator controller
 
     public void operate() {
-
-        if ( operatorController.getHID().getLeftBumper() ){ // Left Bumper aims at the speaker
+        /*
+                 if ( operatorController.getHID().getLeftBumper() ){ // Left Bumper aims at the speaker
             if ( operatorController.getHID().getRightBumper() ){ // Right bumper fires
                 shooter.mode = Mode.SPEAKER_FIRING;
             } else {
@@ -85,6 +104,8 @@ public class RobotContainer {
         } else {
             climber.stay();
         }
+         */
+
 
     }
 
@@ -94,6 +115,7 @@ public class RobotContainer {
         swerve.resetGyro();
     }
 
+    /*
     public void drive( double period ){
 
         boolean slow = driverController.getHID().getRightBumper() ? true : false;
@@ -119,5 +141,5 @@ public class RobotContainer {
 
         swerve.drive(x, y, rot);
     }
-
+    */
 }

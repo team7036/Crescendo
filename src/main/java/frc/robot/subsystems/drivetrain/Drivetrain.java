@@ -2,7 +2,9 @@ package frc.robot.subsystems.drivetrain;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -13,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Drivetrain.*;
@@ -29,6 +32,11 @@ public class Drivetrain extends SubsystemBase {
     private final SwerveModule m_frontRight = new SwerveModule(Ports.FR_TURN, Ports.FR_DRIVE, Ports.FR_ENCODER);
     private final SwerveModule m_backLeft = new SwerveModule(Ports.BL_TURN, Ports.BL_DRIVE, Ports.BL_ENCODER);
     private final SwerveModule m_backRight = new SwerveModule(Ports.BR_TURN, Ports.BR_DRIVE, Ports.BR_ENCODER);
+
+    // Create Rate Limiters
+    private final SlewRateLimiter xSpeedLimiter = new SlewRateLimiter(3);
+    private final SlewRateLimiter ySpeedLimiter = new SlewRateLimiter(3);
+    private final SlewRateLimiter rotSpeedLimiter = new SlewRateLimiter(2 * Math.PI);
 
     // Establish Swerve Module States
     private SwerveModuleState[] moduleStates;
@@ -132,11 +140,15 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void drive(double x, double y, double rot){
-                
+
+        double xSpeed = xSpeedLimiter.calculate( MathUtil.applyDeadband( x, 0.05 ) ) * ( kSlowMode ? Constants.Drivetrain.SLOW_DRIVE_SPEED : Constants.Drivetrain.MAX_DRIVE_SPEED);
+        double ySpeed = ySpeedLimiter.calculate( MathUtil.applyDeadband( y, 0.05 ) ) * ( kSlowMode ? Constants.Drivetrain.SLOW_DRIVE_SPEED : Constants.Drivetrain.MAX_DRIVE_SPEED );
+        double rotSpeed = rotSpeedLimiter.calculate( MathUtil.applyDeadband( rot, 0.05 ) ) *  (kSlowMode ? Constants.Drivetrain.SLOW_TURN_SPEED : Constants.Drivetrain.MAX_TURN_SPEED);        
+
         moduleStates = m_kinematics.toSwerveModuleStates(
             kFieldRelative ?
-            ChassisSpeeds.fromFieldRelativeSpeeds( -x, -y, rot, gyro.getRotation2d().unaryMinus() ) :
-            new ChassisSpeeds(x,y,rot)
+            ChassisSpeeds.fromFieldRelativeSpeeds( xSpeed, ySpeed, rotSpeed, gyro.getRotation2d().unaryMinus() ) :
+            new ChassisSpeeds(xSpeed,ySpeed,rotSpeed)
         );
         
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Constants.Drivetrain.MAX_DRIVE_SPEED);
@@ -152,8 +164,8 @@ public class Drivetrain extends SubsystemBase {
     public void initSendable( SendableBuilder builder){
         SmartDashboard.putData("drivetrain/backright", m_backRight);
         SmartDashboard.putData("drivetrain/backleft", m_backLeft);
-        SmartDashboard.putData("drivetrain/frontright", m_frontRight);
         SmartDashboard.putData("drivetrain/frontleft", m_frontLeft);
+        SmartDashboard.putData("drivetrain/frontright", m_frontRight);
         builder.addDoubleProperty("current heading", gyro::getYaw, null);
     }
 
