@@ -86,14 +86,14 @@ public interface Constants {
                 double VELOCITY_CONVERSION = POSITION_CONVERSION / 60; // RPM to m/s
 
                 public interface PID {
-                    double kP = 1.2;
+                    double kP = 0.01;
                     double kI = 0;
-                    double kD = 0.001;
+                    double kD = 0;
                 }
 
                 public interface Feedforward {
-                    double kS = 0.5; // volts
-                    double kV = 2.3; // volts / velocity
+                    double kS = 1; // volts, 1
+                    double kV = 2.3; // 2.3, volts / velocity
                 }
 
             }
@@ -105,7 +105,7 @@ public interface Constants {
                 public interface PID {
                     double kP = 12;
                     double kI = 0;
-                    double kD = 0.01;
+                    double kD = 0.001;
                 }
                 public interface Feedforward {
                     double kS = 0; // Volts
@@ -144,8 +144,8 @@ public interface Constants {
             int LOWER_SENSOR = 2;
             int UPPER_SENSOR = 1;
         }
-
-        double INTAKE_SPEED = -0.5;
+        double RAMP_RATE = 0.5;
+        double INTAKE_SPEED = -1;
 
     }
 
@@ -241,7 +241,7 @@ public interface Constants {
             double SPEED_CONVERSION = 10/18;
             double SPEAKER_SPEED = 2500;
             double AMP_SPEED = 50;
-            double INTAKE_SPEED = -50;
+            double INTAKE_SPEED = -200;
 
             public enum Mode {
                 INTAKING,

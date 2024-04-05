@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -30,6 +31,16 @@ public class FlyWheels extends SubsystemBase {
         encoder.setVelocityConversionFactor(Constants.Shooter.FlyWheels.SPEED_CONVERSION);
     }
 
+    public Command spinUpCommand( double rpm ){
+        return this.runOnce(()-> this.setSpeed(rpm))
+            .withName("Spinup to " + rpm + " RPM");
+    }
+
+    public Command spinDownCommand(){
+        return this.runOnce(()->this.setSpeed(0))
+            .withName("Spin Down");
+    }
+
     public void idle(){
         motor.setVoltage(0);
     }
@@ -39,10 +50,11 @@ public class FlyWheels extends SubsystemBase {
     }
 
     public boolean atSpeed( double rpm ){
-        return encoder.getVelocity() >= rpm;
+        return Math.abs(encoder.getVelocity()) >= Math.abs(rpm);
     }
 
     public void initSendable( SendableBuilder builder ){
+        super.initSendable(builder);
         builder.addDoubleProperty("speedRPM", this.encoder::getVelocity, null);
     }
 

@@ -49,7 +49,9 @@ public class SwerveModule implements Sendable {
     public SwerveModule(int turnMotorID, int driveMotorID, int turnEncoderID){
 
         m_turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
+        m_turnMotor.setSmartCurrentLimit(40);
         m_driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
+        m_driveMotor.setSmartCurrentLimit(40);
         m_turnPIDContoller.enableContinuousInput(-Math.PI, Math.PI);
         // Setup Turn Encoder
         m_turnEncoder = new CANcoder(turnEncoderID);
@@ -118,6 +120,8 @@ public class SwerveModule implements Sendable {
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("swervemodule");
         builder.addDoubleProperty("turn/position", this::getTurnPosition, null);
+        builder.addDoubleProperty("turn/current", this.m_turnMotor::getOutputCurrent, null);
+        builder.addDoubleProperty("drive/current", this.m_driveMotor::getOutputCurrent, null);
         builder.addDoubleProperty("drive/velocity", this.m_driveEncoder::getVelocity, null);
         builder.addDoubleProperty("drive/position", this.m_driveEncoder::getPosition, null);
     }

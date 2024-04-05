@@ -11,6 +11,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.Constants;
 
@@ -53,6 +55,19 @@ public class Arm extends ProfiledPIDSubsystem {
         disable();
     }
 
+    public Command setAngleCommand( double angle ){
+        return this.runOnce(()->{
+            this.setGoal(angle);
+            this.enable();
+        })
+            .until(m_controller::atGoal)
+            .finallyDo(()->{
+                this.setGoal(Constants.Shooter.Arm.INTAKE_ANGLE);
+                this.enable();
+            })
+            .withName("Set Angle to "+angle);
+    }
+
     @Override
     protected void useOutput(double output, State setpoint) {
         motor.setVoltage(output + feedforward.calculate(setpoint.position, 0));
@@ -64,7 +79,9 @@ public class Arm extends ProfiledPIDSubsystem {
     }
 
     public void initSendable(SendableBuilder builder){
+        super.initSendable(builder);
         builder.addDoubleProperty("angle", this::getMeasurement, null);
+        SmartDashboard.putData("shooter/arm/pid",m_controller);
     }
 
 }
