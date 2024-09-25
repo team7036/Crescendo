@@ -48,6 +48,7 @@ public class Arm extends ProfiledPIDSubsystem {
             Constants.Shooter.Arm.Feedforward.kV
         );
         // Set Default Command
+        m_controller.setTolerance(0.05, 0.05);
     }
 
     public void coast(){
@@ -81,6 +82,7 @@ public class Arm extends ProfiledPIDSubsystem {
     public void initSendable(SendableBuilder builder){
         super.initSendable(builder);
         builder.addDoubleProperty("angle", this::getMeasurement, null);
+        builder.addBooleanProperty("At Goal", this.m_controller::atGoal, null);
         SmartDashboard.putData("shooter/arm/pid",m_controller);
     }
 

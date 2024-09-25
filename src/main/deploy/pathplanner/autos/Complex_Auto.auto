@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7059762690953959,
+      "y": 4.3245400776515845
+    },
+    "rotation": 123.17851165939274
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Speaker_to_Right_Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score Speaker"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6766573533147072,
-      "y": 6.684712797997025
+      "x": 0.4860844007402306,
+      "y": 7.095177618926667
     },
-    "rotation": -118.49563861824495
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Test Path"
+            "pathName": "Left_Simple_Leave"
           }
         }
       ]
     }
   },
-  "folder": "Auto Test",
+  "folder": null,
   "choreoAuto": false
 }

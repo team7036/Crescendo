@@ -86,7 +86,7 @@ public interface Constants {
                 double VELOCITY_CONVERSION = POSITION_CONVERSION / 60; // RPM to m/s
 
                 public interface PID {
-                    double kP = 0.01;
+                    double kP = 1;
                     double kI = 0;
                     double kD = 0;
                 }
@@ -99,13 +99,13 @@ public interface Constants {
             }
             public interface Turn {
 
-                double MAX_VELOCITY = 2 * Math.PI;
-                double MAX_ACCELERATION = 2 * Math.PI;
+                double MAX_VELOCITY = 4 * Math.PI;
+                double MAX_ACCELERATION = 8 * Math.PI;
 
                 public interface PID {
-                    double kP = 12;
+                    double kP = 8;
                     double kI = 0;
-                    double kD = 0.001;
+                    double kD = 0;
                 }
                 public interface Feedforward {
                     double kS = 0; // Volts
@@ -224,8 +224,8 @@ public interface Constants {
             }
 
             double PIVOT_POINT_HEIGHT = 0.61;
-            double ANGLE_OFFSET = 1.15;
-            double SPEAKER_ANGLE_SHORT = 1.8; // 1 Meter
+            double ANGLE_OFFSET = 1.1;
+            double SPEAKER_ANGLE_SHORT = 1.88; // 1 Meter
             double AMP_ANGLE = Math.PI;
             double INTAKE_ANGLE = 0.1;
             float MAX_ANGLE = (float) AMP_ANGLE;

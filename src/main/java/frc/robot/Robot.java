@@ -5,11 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.Autonomous;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -80,8 +77,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    //robotContainer.drive(getPeriod());
-    //robotContainer.operate();
+
   }
 
   /** This function is called once when the robot is disabled. */
